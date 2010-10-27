@@ -227,7 +227,8 @@ Dean.Application = new Class({
     _executeArounds: function(route, fn)
     {
         if(this._arounds.length < 1) {
-            return fn.call();
+            var context = new Dean.ApplicationContext(this);
+                context.execute(fn, {});
         }
         
         var wrapper = fn;

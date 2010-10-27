@@ -1,6 +1,5 @@
 TODO
 
-- implement before, after, around
 - default params should used when a route should match and params are missing
 - before hooks can stop the process
 - before hook options only.path can have multiple paths through an array consisting of strings and regexes
@@ -10,3 +9,4 @@ DONE
 - integrate mustache.js // via helper Mustache.to_html
 - use native hashchanged event or interval // removed interval, now only a grade browser supported
 - add an fully configured application context to before
+- implement before, after, around
