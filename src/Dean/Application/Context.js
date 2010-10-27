@@ -156,16 +156,25 @@ Dean.ApplicationContext = new Class({
             throw Error('Callback is no valid function!');
         }
         
-        var app  = this.getApplication();
-        var base = Object.append({
-            getHelper:      app.getHelper.bind(this.getApplication()),
-            runHelper:      app.runHelper.bind(this.getApplication()),
-            getElement:     app.getElement.bind(this.getApplication()),
-            getElements:    app.getElements.bind(this.getApplication()),
-            getParams:      function() {return routeParams || {}; }
-        }, this.getApplication().getHelpers());
+
         
-        return fn.apply(base, Array.from(this.getArguments()));
+        return fn.apply(this.getBase(routeParams), Array.from(this.getArguments()));
+    },
+    
+    getBase: function(params)
+    {
+        var params = params || {};
+        var app  = this.getApplication();
+        
+        var base = Object.append({
+            getHelper:      app.getHelper.bind(app),
+            runHelper:      app.runHelper.bind(app),
+            getElement:     app.getElement.bind(app),
+            getElements:    app.getElements.bind(app),
+            getParams:      function() {return params || {}; }
+        }, app.getHelpers());
+        
+        return base;        
     },
     
     /**

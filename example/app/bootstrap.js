@@ -12,10 +12,11 @@ var mustachePlugin = function() {;
 
 var app = new Dean.Application('#main', function() {
     
-    this.around('#/about', function(callback) {
-        console.log('Around: start');
+    this.around('#/about', function(callback, context) {
+        var json = context.toJson({data: ["1","2","3"]});
+        console.log(json);
+        
         callback();
-        console.log('Around: end');
     });
     
     this.before(['#/about', '#/mustache'], function() {

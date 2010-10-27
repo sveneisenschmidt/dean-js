@@ -231,16 +231,18 @@ Dean.Application = new Class({
         }
         
         var wrapper = fn;
+        var context = new Dean.ApplicationContext(this);
+        
         Array.each(this._arounds.reverse(), function(around) {
             if(this._isExecutable(route, around.options)) {
                 var last = wrapper;
                     wrapper = function() { 
-                        return around.fn.apply(fn, [last]); 
+                        return around.fn.apply(fn, [last, context.getBase()]); 
                     }; 
             }
         }.bind(this));
         
-        wrapper.call();
+        wrapper.apply([context.getBase()]);
     }.protect(),
 
     /**
