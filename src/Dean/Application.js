@@ -214,9 +214,10 @@ Dean.Application = new Class({
             throw Error(404);
         }
 
-        this._executeHooks(route, this._befores);
-        this._executeArounds(route, route.execute.pass([url, base], route));
-        this._executeHooks(route, this._afters);
+        if(!this._executeHooks(route, this._befores)) {
+            this._executeArounds(route, route.execute.pass([url, base], route));
+            this._executeHooks(route, this._afters);
+        }
     },
    
     /**
@@ -252,9 +253,14 @@ Dean.Application = new Class({
      */
     _executeHooks: function(route, hooks)
     {
+        var abort = false;
         Array.each(hooks, function(hook) {
-            this._executeHook(route, hook.options, hook.fn);
+            if(abort === false && !this._executeHook(route, hook.options, hook.fn)) {
+                abort = true;
+            }
         }.bind(this));
+        
+        return abort;
     }.protect(),
 
     /**
@@ -265,8 +271,12 @@ Dean.Application = new Class({
     {
         if(this._isExecutable(route, options)) {
             var context = new Dean.ApplicationContext(this);
-                context.execute(fn, {});
+            var result  = context.execute(fn, {});
+            
+            return !(typeOf(result) == 'boolean' && result === false);
         }
+        
+        return true;
     }.protect(),
 
     /**

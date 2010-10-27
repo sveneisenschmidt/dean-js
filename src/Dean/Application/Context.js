@@ -156,8 +156,6 @@ Dean.ApplicationContext = new Class({
             throw Error('Callback is no valid function!');
         }
         
-
-        
         return fn.apply(this.getBase(routeParams), Array.from(this.getArguments()));
     },
     

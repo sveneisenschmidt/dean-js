@@ -1,7 +1,6 @@
 TODO
 
 - default params should used when a route should match and params are missing
-- before hooks can stop the process
 - before hook options only.path can have multiple paths through an array consisting of strings and regexes
 - exclude option for before, after, around hooks
 
@@ -11,3 +10,4 @@ DONE
 - use native hashchanged event or interval // removed interval, now only a grade browser supported
 - add an fully configured application context to before
 - implement before, after, around
+- before hooks can stop the process

@@ -21,7 +21,12 @@ var app = new Dean.Application('#main', function() {
     });
     
     this.before(['#/about', '#/mustache'], function() {
-        console.log('before: ', this);
+        console.log('before: 1 ', this);
+        return false;
+    });
+    
+    this.before(['#/about', '#/mustache'], function() {
+        console.log('before: 2 ', this);
     });
     
     this.after(['#/about', '#/mustache'], function() {
