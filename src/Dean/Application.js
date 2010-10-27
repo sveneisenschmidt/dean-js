@@ -215,7 +215,7 @@ Dean.Application = new Class({
         }
 
         this._executeHooks(route, this._befores);
-        this._executeArounds(route.execute.pass([url, base],route));
+        this._executeArounds(route.execute.pass([url, base], route));
         this._executeHooks(route, this._afters);
     },
    
@@ -226,7 +226,19 @@ Dean.Application = new Class({
      */
     _executeArounds: function(fn)
     {
-        fn.call();
+        if(this._arounds.length < 1) {
+            return fn.call();
+        }
+        
+        var wrapper = fn;
+        Array.each(this._arounds.reverse(), function(around) {
+            var last = wrapper;
+                wrapper = function() { 
+                    return around.fn.apply(fn, [last]); 
+                };
+        });
+        
+        wrapper.call();
     }.protect(),
 
     /**
@@ -371,6 +383,17 @@ Dean.Application = new Class({
     addAfter: function(options, fn)
     {
         this.addHook(this._afters, options, fn);
+    },
+
+    /**
+     *
+     * @param String|Object|RegEx|Function options
+     * @param Function fn
+     * @return Object
+     */
+    addAround: function(options, fn)
+    {
+        this.addHook(this._arounds, options, fn);
     },
     
     /**
