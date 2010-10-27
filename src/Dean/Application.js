@@ -230,8 +230,7 @@ Dean.Application = new Class({
         var wrapper = fn;
         
         if(this._arounds.length < 1) {
-            context.execute(wrapper, {});
-            return;
+            wrapper.call();
         }
         
         Array.each(this._arounds.reverse(), function(around) {
