@@ -215,10 +215,19 @@ Dean.Application = new Class({
         }
 
         this._executeHooks(route, this._befores);
-        route.execute(url, base);
+        this._executeArounds(route.execute.pass([url, base],route));
         this._executeHooks(route, this._afters);
-
     },
+   
+    /**
+     *
+     * @param Function fn
+     * @return void
+     */
+    _executeArounds: function(fn)
+    {
+        fn.call();
+    }.protect(),
 
     /**
      *
