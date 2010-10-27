@@ -13,9 +13,9 @@ var mustachePlugin = function() {;
 var app = new Dean.Application('#main', function() {
     
     this.around('#/about', function(callback) {
-        
+        console.log('Around: start');
         callback();
-        
+        console.log('Around: end');
     });
     
     this.before(['#/about', '#/mustache'], function() {
@@ -38,6 +38,7 @@ var app = new Dean.Application('#main', function() {
     
     this.get('#/about', function() {
         this.clear();
+        console.log('about');
     });
     
     this.get('#/redirect', function() {

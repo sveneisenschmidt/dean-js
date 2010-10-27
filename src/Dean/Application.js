@@ -215,7 +215,7 @@ Dean.Application = new Class({
         }
 
         this._executeHooks(route, this._befores);
-        this._executeArounds(route.execute.pass([url, base], route));
+        this._executeArounds(route, route.execute.pass([url, base], route));
         this._executeHooks(route, this._afters);
     },
    
@@ -224,7 +224,7 @@ Dean.Application = new Class({
      * @param Function fn
      * @return void
      */
-    _executeArounds: function(fn)
+    _executeArounds: function(route, fn)
     {
         if(this._arounds.length < 1) {
             return fn.call();
@@ -232,11 +232,13 @@ Dean.Application = new Class({
         
         var wrapper = fn;
         Array.each(this._arounds.reverse(), function(around) {
-            var last = wrapper;
-                wrapper = function() { 
-                    return around.fn.apply(fn, [last]); 
-                };
-        });
+            if(this._isExecutable(route, around.options)) {
+                var last = wrapper;
+                    wrapper = function() { 
+                        return around.fn.apply(fn, [last]); 
+                    }; 
+            }
+        }.bind(this));
         
         wrapper.call();
     }.protect(),
@@ -258,10 +260,22 @@ Dean.Application = new Class({
      */
     _executeHook: function(route, options, fn)
     {
-        var context = new Dean.ApplicationContext(this);
+        if(this._isExecutable(route, options)) {
+            var context = new Dean.ApplicationContext(this);
+                context.execute(fn, {});
+        }
+    }.protect(),
 
+    /**
+     *
+     * @param Dean.RouterRoute route
+     * @param Object options
+     * @return void
+     */
+    _isExecutable: function(route, options)
+    {
         if(Object.getLength(options) == 0) {
-            context.execute(fn, {});
+            return true;
         } else 
 
         if(options.only) {
@@ -276,11 +290,11 @@ Dean.Application = new Class({
                     route.match(path) ? match = true : null;
                 });
                
-               if(true === match) {
-                   context.execute(fn, {});
-               }
+               return match;
             }
         }
+         
+        return false;
     }.protect(),
 
     /**
