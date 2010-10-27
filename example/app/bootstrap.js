@@ -13,6 +13,7 @@ var mustachePlugin = function() {;
 var app = new Dean.Application('#main', function() {
     
     this.around('#/about', function(callback, context) {
+        
         var json = context.toJson({data: ["1","2","3"]});
         console.log(json);
         

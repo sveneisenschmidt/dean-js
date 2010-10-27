@@ -231,6 +231,7 @@ Dean.Application = new Class({
         
         if(this._arounds.length < 1) {
             wrapper.call();
+            return;
         }
         
         Array.each(this._arounds.reverse(), function(around) {
