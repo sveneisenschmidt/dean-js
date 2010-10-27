@@ -125,6 +125,17 @@ Dean.ApplicationContext = new Class({
 
     /**
      *
+     * @param String|Object|RegEx route
+     * @param Function fn
+     * @return Object
+     */
+    after: function()
+    {
+        return this.getApplication().addAfter.apply(this.getApplication(), arguments);
+    },
+
+    /**
+     *
      * @return void
      */
     execute: function(fn, routeParams)

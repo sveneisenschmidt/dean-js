@@ -78,6 +78,18 @@ Dean.Application = new Class({
 
     /**
      *
+     * @var Array
+     */
+    _afters: [],
+
+    /**
+     *
+     * @var Array
+     */
+    _arounds: [],
+
+    /**
+     *
      * @var Function
      */
     _defaultPlugin: function() {
@@ -202,18 +214,20 @@ Dean.Application = new Class({
             throw Error(404);
         }
 
-        this._executeBefores(route);
+        this._executeHooks(route, this._befores);
         route.execute(url, base);
+        this._executeHooks(route, this._afters);
+
     },
 
     /**
      *
      * @return void
      */
-    _executeBefores: function(route)
+    _executeHooks: function(route, hooks)
     {
-        Array.each(this._befores, function(before) {
-            this._executeBefore(route, before.options, before.fn);
+        Array.each(hooks, function(hook) {
+            this._executeHook(route, hook.options, hook.fn);
         }.bind(this));
     }.protect(),
 
@@ -221,7 +235,7 @@ Dean.Application = new Class({
      *
      * @return void
      */
-    _executeBefore: function(route, options, fn)
+    _executeHook: function(route, options, fn)
     {
         var context = new Dean.ApplicationContext(this);
 
@@ -336,6 +350,28 @@ Dean.Application = new Class({
      */
     addBefore: function(options, fn)
     {
+        this.addHook(this._befores, options, fn)
+    },
+
+    /**
+     *
+     * @param String|Object|RegEx|Function options
+     * @param Function fn
+     * @return Object
+     */
+    addAfter: function(options, fn)
+    {
+        this.addHook(this._afters, options, fn);
+    },
+    
+    /**
+     *
+     * @param String|Object|RegEx|Function options
+     * @param Function fn
+     * @return Object
+     */
+    addHook: function(data, options, fn)
+    {
         if(typeOf(options) == 'function') {
             fn = options;
             options = {};
@@ -353,12 +389,12 @@ Dean.Application = new Class({
             options.only.path = [options.only.path];
         }
 
-        this._befores.push({
+        data.push({
             fn: fn,
             options: options
         });
     },
-
+    
     /**
      *
      * @return Dean.RequestHash

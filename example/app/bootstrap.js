@@ -15,6 +15,10 @@ var app = new Dean.Application('#main', function() {
     this.before(['#/about', '#/mustache'], function() {
         console.log('before: ', this);
     });
+    
+    this.after(['#/about', '#/mustache'], function() {
+        console.log('after: ', this);
+    });
 
     this.get('#/', function() {
         this.clear();        
