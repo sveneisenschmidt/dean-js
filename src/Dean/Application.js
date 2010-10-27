@@ -226,13 +226,13 @@ Dean.Application = new Class({
      */
     _executeArounds: function(route, fn)
     {
-        if(this._arounds.length < 1) {
-            var context = new Dean.ApplicationContext(this);
-                context.execute(fn, {});
-        }
-        
-        var wrapper = fn;
         var context = new Dean.ApplicationContext(this);
+        var wrapper = fn;
+        
+        if(this._arounds.length < 1) {
+            context.execute(wrapper, {});
+            return;
+        }
         
         Array.each(this._arounds.reverse(), function(around) {
             if(this._isExecutable(route, around.options)) {
