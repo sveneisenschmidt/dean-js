@@ -26,6 +26,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  *
+ * @category Service
  * @package Dean
  *
  * @license MIT-Style License
@@ -34,40 +35,30 @@
  * @link www.unsicherheitsagent.de
  *
  */
+
+Dean.namespace('Dean.Service.YQL');
 
 /**
- * Dean
+ * Dean.Service.YQL
  *
+ * @category Logger
  * @package Dean
  * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
  * @copyright 2010, Sven Eisenschmidt
  * @license MIT-Style License
  * @link www.unsicherheitsagent.de
  */
-var Dean = {
+Dean.Service.YQL = function() {
 
-    /**
-     *
-     * @var String
-     */
-    version: '$version$',
+    this.helper('yql', function(select, fn, format, diagnostics) {
+        var format = format || 'json',
+            diag   = diagnostics || false;
 
-    /**
-     *
-     * @return Object
-     */
-    namespace: function() {
-        var a=arguments, o=null, i, j, d;
-        for (i=0; i<a.length; i=i+1) {
-            d=(""+a[i]).split(".");
-            o=Dean;
-            for (j=(d[0] == "Dean") ? 1 : 0; j<d.length; j=j+1) {
-                o[d[j]]=o[d[j]] || {};
-                o=o[d[j]];
-            }
-        }
-        return o;
-    }
+        if(typeOf(fn) == 'function') fn = {onComplete: fn};
+
+        new Request.JSONP(Object.append({
+          url: 'http://query.yahooapis.com/v1/public/yql',
+          data: {q: select, diagnostics: diag, format: format }
+        }, fn)).send();
+    });
 }
-
-

@@ -26,6 +26,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  *
+ * @category Logger
  * @package Dean
  *
  * @license MIT-Style License
@@ -34,40 +35,51 @@
  * @link www.unsicherheitsagent.de
  *
  */
+
+Dean.namespace('Dean.LoggerProxy');
 
 /**
- * Dean
+ * Dean.LoggerProxy
  *
+ * @category Logger
  * @package Dean
  * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
  * @copyright 2010, Sven Eisenschmidt
  * @license MIT-Style License
  * @link www.unsicherheitsagent.de
  */
-var Dean = {
+Dean.LoggerProxy = new Class({
 
     /**
      *
-     * @var String
+     * @var Object
      */
-    version: '$version$',
+    _logger: {},
 
     /**
      *
-     * @return Object
+     * @return void
      */
-    namespace: function() {
-        var a=arguments, o=null, i, j, d;
-        for (i=0; i<a.length; i=i+1) {
-            d=(""+a[i]).split(".");
-            o=Dean;
-            for (j=(d[0] == "Dean") ? 1 : 0; j<d.length; j=j+1) {
-                o[d[j]]=o[d[j]] || {};
-                o=o[d[j]];
-            }
+    log: function()
+    {
+        var args = Array.clone(arguments);
+        Object.each(this._logger, function(logger) {
+            logger.apply(logger, args);
+        });
+    },
+
+    /**
+     *
+     * @param Function fn
+     * @return void
+     */
+    addLogger: function(name, fn)
+    {
+        if(typeOf(fn) != 'function') {
+            throw new Error('param is no function!');
         }
-        return o;
+
+        this._logger[name] = fn;
+        return fn;
     }
-}
-
-
+});

@@ -1,51 +1,45 @@
-var mustachePlugin = function() {;
-
-    this.helper('mustache', Mustache.to_html);
-    
-    this.get('#/mustache', function() {
-        this.clear();        
-        var html = this.mustache('<h2>You have a nice beard, {{name}}!</h2>', {name: 'Dude'});            
-        new Element('div', {html: html}).inject(this.getElement());
-    });    
-}
 
 
 var app = new Dean.Application('#main', function() {
-    
+
+    console.log(this);
+//    this.options({
+//        raise_errors: true
+//    });
+
     this.around('#/about', function(callback, context) {
-        
         var json = context.toJson({data: ["1","2","3"]});
         console.log(json);
-        
         callback();
     });
     
-    this.before(['#/about', '#/mustache'], function() {
-        console.log('before: 1 ', this);
-        return false;
+    this.get('#/mustache', function() {      
+        var html = this.mustache('<h2>You have a nice beard, {{name}}!</h2>', {name: 'Dude'});            
+        new Element('div', {html: html}).inject(this.getElement());
+    });   
+    
+    this.before(function() {
+        this.clear();
     });
     
     this.before(['#/about', '#/mustache'], function() {
-        console.log('before: 2 ', this);
+
     });
     
     this.after(['#/about', '#/mustache'], function() {
-        console.log('after: ', this);
+
     });
 
     this.get('#/', function() {
-        this.clear();        
-        new Element('div', {text: 'Startpage'}).inject(this.getElement()); 
+        new Element('div', {text: 'Startpage'}).inject(this.getElement());
     });
     
-    this.get('#/article/:id', function() {  
-        this.clear(); 
-        console.log(this.getParams());
+    this.get('#/article/:id', function() { 
+        this.log(this.getParams());
     }, {id: 10});
     
     this.get('#/about', function() {
-        this.clear();
-        console.log('about');
+
     });
     
     this.get('#/redirect', function() {
@@ -53,13 +47,26 @@ var app = new Dean.Application('#main', function() {
     });
 
     this.get(/#\/hello/g, function() {
-        console.log('hello');
+
     });
     
     this.get('#/forward', function() {
         this.forward('#/');
     });
-    this.utilise(mustachePlugin);
+    
+    this.use(Dean.Template.Mustache);
+    this.use(Dean.Logger.Firebug);
+
+
+
+    this.use(Dean.Service.YQL);
+    this.get('#/yql', function() {
+        this.yql('SELECT * FROM flickr.photos.search WHERE text="cat"', function(response) {
+            this.log(response.query.results.photo);
+            this.log('look at my wonderful kitten pictures');
+        }.bind(this));
+    });
+    
 });
 
 window.addEvent('domready', function() {

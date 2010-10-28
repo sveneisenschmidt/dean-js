@@ -26,6 +26,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  *
+ * @category Template
  * @package Dean
  *
  * @license MIT-Style License
@@ -34,40 +35,19 @@
  * @link www.unsicherheitsagent.de
  *
  */
+
+Dean.namespace('Dean.Template.Mustache');
 
 /**
- * Dean
+ * Dean.Template.Mustache
  *
+ * @category Template
  * @package Dean
  * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
  * @copyright 2010, Sven Eisenschmidt
  * @license MIT-Style License
  * @link www.unsicherheitsagent.de
  */
-var Dean = {
-
-    /**
-     *
-     * @var String
-     */
-    version: '$version$',
-
-    /**
-     *
-     * @return Object
-     */
-    namespace: function() {
-        var a=arguments, o=null, i, j, d;
-        for (i=0; i<a.length; i=i+1) {
-            d=(""+a[i]).split(".");
-            o=Dean;
-            for (j=(d[0] == "Dean") ? 1 : 0; j<d.length; j=j+1) {
-                o[d[j]]=o[d[j]] || {};
-                o=o[d[j]];
-            }
-        }
-        return o;
-    }
+Dean.Template.Mustache = function() {
+    this.helper('mustache', Mustache.to_html); 
 }
-
-

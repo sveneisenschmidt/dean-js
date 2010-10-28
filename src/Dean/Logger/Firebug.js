@@ -26,6 +26,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  *
+ * @category Logger
  * @package Dean
  *
  * @license MIT-Style License
@@ -34,40 +35,33 @@
  * @link www.unsicherheitsagent.de
  *
  */
+
+Dean.namespace('Dean.Logger.Firebug');
 
 /**
- * Dean
+ * Dean.Logger.Firebug
  *
+ * @category Logger
  * @package Dean
  * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
  * @copyright 2010, Sven Eisenschmidt
  * @license MIT-Style License
  * @link www.unsicherheitsagent.de
  */
-var Dean = {
+Dean.Logger.Firebug = function() {
 
-    /**
-     *
-     * @var String
-     */
-    version: '$version$',
-
-    /**
-     *
-     * @return Object
-     */
-    namespace: function() {
-        var a=arguments, o=null, i, j, d;
-        for (i=0; i<a.length; i=i+1) {
-            d=(""+a[i]).split(".");
-            o=Dean;
-            for (j=(d[0] == "Dean") ? 1 : 0; j<d.length; j=j+1) {
-                o[d[j]]=o[d[j]] || {};
-                o=o[d[j]];
-            }
-        }
-        return o;
+    if (typeOf(console) !== 'object' ||
+        (typeOf(console) == 'object' &&
+         typeOf(console.log) !== 'function'
+        )
+    ) {
+        return;
     }
+
+    this.logger('firebug', function() {
+        console.log.pass(arguments).call();
+    });
+
+    this.helper('firebugClear', console.clear);
+
 }
-
-

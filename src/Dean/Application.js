@@ -66,6 +66,12 @@ Dean.Application = new Class({
 
     /**
      *
+     * @var Dean.LoggerProxy
+     */
+    _loggerProxy: null,
+
+    /**
+     *
      * @var Object
      */
     _helper: {},
@@ -93,7 +99,7 @@ Dean.Application = new Class({
      * @var Function
      */
     _defaultPlugin: function() {
-        
+
         // default helpers
         this.helper({
             
@@ -158,6 +164,16 @@ Dean.Application = new Class({
             toJson: function()
             {
                 return JSON.encode.apply(JSON, arguments);
+            },
+
+            /**
+             *
+             * @return void
+             */
+            log: function()
+            {
+                var logger = this.getApplication().getLoggerProxy();
+                return logger.log.apply(logger, arguments);
             }
         });
     },
@@ -183,11 +199,11 @@ Dean.Application = new Class({
         
         if (args.length > 0) {
             Array.each(arguments, function(arg) {
-                this.utilise(arg);
+                this.use(arg);
             }, this);
         }
         
-        this.utilise(this._defaultPlugin);
+        this.use(this._defaultPlugin);
     },
 
     /**
@@ -355,7 +371,7 @@ Dean.Application = new Class({
      * @param mixed 
      * @return void
      */
-    utilise: function(arg)
+    use: function(arg)
     {
         if(typeOf(arg) == 'function') {
             var args = Array.clone(arguments);
@@ -538,5 +554,37 @@ Dean.Application = new Class({
         var helper = this.getHelper(name);
         
         return helper.apply(null, [params]);        
+    },
+
+    /**
+     *
+     * @return Function
+     */
+    addLogger: function()
+    {
+        return this.getLoggerProxy().addLogger.apply(this.getLoggerProxy(), arguments);
+    },
+
+    /**
+     *
+     * @param String name
+     * @return void
+     */
+    removeLogger: function()
+    {
+        return this.getLoggerProxy().removeLogger.apply(this.getLoggerProxy(), arguments);
+    },
+
+    /**
+     *
+     * @return Dean.LoggerProxy
+     */
+    getLoggerProxy: function()
+    {
+        if(null === this._loggerProxy) {
+            this._loggerProxy = new Dean.LoggerProxy();
+        }
+
+        return this._loggerProxy;
     }
 });

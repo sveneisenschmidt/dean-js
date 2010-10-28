@@ -56,18 +56,6 @@ Dean.ApplicationContext = new Class({
      */
     _application: null,
     
-    /**
-     *
-     * @var Dean.Application
-     */
-    _fn: Function.from(),
-    
-    /**
-     *
-     * @var String
-     */
-    _hash: null,
-    
     /*
      *
      * @return void
@@ -99,6 +87,41 @@ Dean.ApplicationContext = new Class({
     helper: function(name, fn)
     {
         return this.register(name, this.getApplication().addHelper(name, fn));
+    },
+
+    /**
+     *
+     * @param String name
+     * @param Function fn
+     * @return Object
+     */
+    logger: function(name, fn)
+    {
+        return this.getApplication().addLogger(name, fn);
+    },
+
+    /**
+     *
+     * @param String name
+     * @param String|Array option
+     * @return Object
+     */
+    option: function(name, option)
+    {
+        var options = {};
+            options[name] = option;
+
+        return this.options(options);
+    },
+
+    /**
+     *
+     * @param Object options
+     * @return Object
+     */
+    options: function()
+    {
+        return this.getApplication().setOptions.pass(arguments).call();
     },
         
     /**
@@ -197,9 +220,9 @@ Dean.ApplicationContext = new Class({
      *
      * @return void
      */
-    utilise: function()
+    use: function()
     {
-        this.getApplication().utilise.apply(this.getApplication(), arguments);
+        this.getApplication().use.apply(this.getApplication(), arguments);
     },
     
     /**

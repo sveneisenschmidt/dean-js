@@ -1,2 +1,0 @@
-RewriteEngine on
-RewriteRule bundle.js   bundle.php  [L]
