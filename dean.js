@@ -1012,6 +1012,9 @@ Dean.namespace('Dean.ApplicationContextChain');
 
 /**
  * Dean.ApplicationContextChain
+ * 
+ * Based on Sammy.js RenderContext <http://github.com/quirkey/sammy> 
+ * Special thanks to Aaron Quint
  *
  * @category Application
  * @package Dean
@@ -1082,7 +1085,7 @@ Dean.ApplicationContextChain = new Class({
         }
         
         if (this._queue.length > 0) {
-            this.then(this._queue.shift());
+            this.then(this._queue.shift(), this._queue.length);
         }
     },
     
@@ -1099,12 +1102,14 @@ Dean.ApplicationContextChain = new Class({
         }
         this.wait();
         
+        var fn      = this.next.bind(this);
         var options = options || {};
         var request = new Request(Object.append(options, {
             url: resource,
             async: true,
             method: 'get',
-            onSuccess: this.next.bind(this)
+            onSuccess: fn,
+            onFailure: fn
         })).send();
         
         return this;
@@ -2198,65 +2203,4 @@ Dean.namespace('Dean.Template.Mustache');
  */
 Dean.Template.Mustache = function() {
     this.helper('mustache', Mustache.to_html); 
-}/**
- *
- * Copyright (c) 2010, Sven Eisenschmidt.
- * All rights reserved.
- *
- * Redistribution with or without modification, are permitted.
- *
- * Permission is hereby granted, free of charge, to any person
- * obtaining a copy of this software and associated documentation
- * files (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use,
- * copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following
- * conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * @category Template
- * @package Dean
- *
- * @license MIT-Style License
- * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
- * @copyright 2010, Sven Eisenschmidt
- * @link www.unsicherheitsagent.de
- *
- */
-
-Dean.namespace('Dean.Template.Mooml');
-
-/**
- * Dean.Template.Moooml
- *
- * @category Template
- * @package Dean
- * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
- * @copyright 2010, Sven Eisenschmidt
- * @license MIT-Style License
- * @link www.unsicherheitsagent.de
- */
-Dean.Template.Pure = function() {
-    
-    this.helper('pure', function(template, data) {
-        var el = new Element('div', {html:  template});
-            el = el.getChildren();
-            el.append(document.body);
-            
-            
-            console.log(el);
-        
-    });
 }

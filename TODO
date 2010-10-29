@@ -14,3 +14,4 @@ DONE
 - add an fully configured application context to before
 - implement before, after, around
 - before hooks can stop the process
+- implement on .load onFailure callback

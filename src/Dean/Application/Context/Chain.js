@@ -113,7 +113,7 @@ Dean.ApplicationContextChain = new Class({
         }
         
         if (this._queue.length > 0) {
-            this.then(this._queue.shift());
+            this.then(this._queue.shift(), this._queue.length);
         }
     },
     
@@ -130,12 +130,14 @@ Dean.ApplicationContextChain = new Class({
         }
         this.wait();
         
+        var fn      = this.next.bind(this);
         var options = options || {};
         var request = new Request(Object.append(options, {
             url: resource,
             async: true,
             method: 'get',
-            onSuccess: this.next.bind(this)
+            onSuccess: fn,
+            onFailure: fn
         })).send();
         
         return this;
