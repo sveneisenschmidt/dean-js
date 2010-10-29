@@ -2,32 +2,14 @@
 
 var app = new Dean.Application('#main', function() {
 
-    console.log(this);
-//    this.options({
-//        raise_errors: true
-//    });
-
     this.around('#/about', function(callback, context) {
         var json = context.toJson({data: ["1","2","3"]});
         console.log(json);
         callback();
     });
     
-    this.get('#/mustache', function() {      
-        var html = this.mustache('<h2>You have a nice beard, {{name}}!</h2>', {name: 'Dude'});            
-        new Element('div', {html: html}).inject(this.getElement());
-    });   
-    
     this.before(function() {
         this.clear();
-    });
-    
-    this.before(['#/about', '#/mustache'], function() {
-
-    });
-    
-    this.after(['#/about', '#/mustache'], function() {
-
     });
 
     this.get('#/', function() {
@@ -40,6 +22,10 @@ var app = new Dean.Application('#main', function() {
     
     this.get('#/about', function() {
 
+    });
+
+    this.get('#/ola', function() {
+        alert('ola!');
     });
     
     this.get('#/redirect', function() {
@@ -54,13 +40,36 @@ var app = new Dean.Application('#main', function() {
         this.forward('#/');
     });
     
+    
+    
+    
+    // examples
     this.use(Dean.Template.Mustache);
+    this.get('#/example/template/mustache', function() {      
+        var html = this.mustache('<h2>Mustache: You have a nice beard, {{name}}!</h2>', {name: 'Dude'});            
+        new Element('div', {html: html}).inject(this.getElement());
+    });  
+    
+    this.use(Dean.Template.Mooml);
+    this.get('#/example/template/mooml', function() {      
+        var html = this.mooml(function(data) {
+            h2('Mooml: Remember the Milk, ' + data.name + '!');
+        }, {name: 'Dude'});     
+        
+        html.inject(this.getElement());
+    });   
+     
+    
+    
     this.use(Dean.Logger.Firebug);
+    this.get('#/example/logger/firebug', function() {      
+        this.log('Show me in Firebug :)');
+    });   
+    
 
-
-
-    this.use(Dean.Service.YQL);
-    this.get('#/yql', function() {
+    
+    this.get('#/example/service/yql', function() {
+        this.use(Dean.Service.YQL);
         this.yql('SELECT * FROM flickr.photos.search WHERE text="cat"', function(response) {
             this.log(response.query.results.photo);
             this.log('look at my wonderful kitten pictures');
