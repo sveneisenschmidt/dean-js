@@ -5,6 +5,7 @@ TODO
 - exclude option for before, after, around hooks
 - implement error logger
 - implement post, put, delete
+- implement options (throw_errors etc)
 
 DONE
 

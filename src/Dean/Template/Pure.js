@@ -48,29 +48,15 @@ Dean.namespace('Dean.Template.Mooml');
  * @license MIT-Style License
  * @link www.unsicherheitsagent.de
  */
-Dean.Template.Mooml = function() {
+Dean.Template.Pure = function() {
     
-    this.helper('mooml', function(name, template, data) {
+    this.helper('pure', function(template, data) {
+        var el = new Element('div', {html:  template});
+            el = el.getChildren();
+            el.append(document.body);
+            
+            
+            console.log(el);
         
-        var data = data || {};
-        
-        if(typeOf(name) == 'function') {
-            data     = template || {};
-            template = name;
-            name     = 'default';
-        }
-        
-        if (typeOf(template) == 'function' ||
-            typeOf(template) == 'array' 
-        ) {
-            Mooml.register(name, template);
-        }
-        if (typeOf(template) == 'object') {
-            data = template;
-            delete(template);
-        }
-   
-        var el = Mooml.render(name, data);
-        return el;
     });
 }

@@ -181,19 +181,32 @@ Dean.ApplicationContext = new Class({
         
         return fn.apply(this.getBase(routeParams), Array.from(this.getArguments()));
     },
-    
+
+    /**
+     *
+     * @return Object
+     */    
     getBase: function(params)
     {
         var params = params || {};
-        var app  = this.getApplication();
+        var app   = this.getApplication();
         
         var base = Object.append({
             getHelper:      app.getHelper.bind(app),
             runHelper:      app.runHelper.bind(app),
             getElement:     app.getElement.bind(app),
             getElements:    app.getElements.bind(app),
-            getParams:      function() {return params || {}; }
+            getParams:      function() {return params || {};},
+            $chain:          new Dean.ApplicationContextChain(this)
         }, app.getHelpers());
+        
+        base.$chain.setRouteContext(base);
+        Object.append(base, {
+            then:  base.$chain.then.bind(base.$chain),
+            next:  base.$chain.next.bind(base.$chain),
+            load:  base.$chain.load.bind(base.$chain),
+            wait:  base.$chain.wait.bind(base.$chain)
+        });
         
         return base;        
     },

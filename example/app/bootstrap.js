@@ -44,12 +44,30 @@ var app = new Dean.Application('#main', function() {
     
     
     // examples
+    
+    /**
+     *
+     * Context chain
+     */
+    this.get('#/example/chain', function() {
+        this.load('app/templates/chain.html')
+            .then(function(html) {
+                console.log(this);
+            });
+    });
+    
+    /**
+     * Templates with Mustache
+     */
     this.use(Dean.Template.Mustache);
     this.get('#/example/template/mustache', function() {      
         var html = this.mustache('<h2>Mustache: You have a nice beard, {{name}}!</h2>', {name: 'Dude'});            
         new Element('div', {html: html}).inject(this.getElement());
     });  
     
+    /**
+     * Templates with Mooml
+     */
     this.use(Dean.Template.Mooml);
     this.get('#/example/template/mooml', function() {      
         var html = this.mooml(function(data) {
@@ -57,8 +75,7 @@ var app = new Dean.Application('#main', function() {
         }, {name: 'Dude'});     
         
         html.inject(this.getElement());
-    });   
-     
+    });  
     
     
     this.use(Dean.Logger.Firebug);
@@ -70,16 +87,16 @@ var app = new Dean.Application('#main', function() {
     this.use(Dean.Service.YQL);
     this.use(Dean.Template.Mustache);
     this.get('#/example/service/yql', function() {
-        this.yql('SELECT * FROM flickr.photos.search WHERE text="cat" LIMIT 5', function(response) {
-            
-            var html = '<h2>Images from Flickt with text `cat`</h2>';  
-            
-            Array.each(response.query.results.photo, function(photo) {
-                var img   = '<img width="100" height="100" src="http://farm{{farm}}.static.flickr.com/{{server}}/{{id}}_{{secret}}.jpg" title="{{title}}"/>';
-                    html += this.mustache(img, photo);
-            }.bind(this));      
-            
-            new Element('div', {html: html}).inject(this.getElement());  
+        this.yql('SELECT id, name, url from music.artist.similar WHERE id="306489" LIMIT 5', function(response) {
+ 
+            var tpl  = "<h3>Artists simliar to Alexisonfire (pulled with YQL)</h3>" +
+                       "<ul> {{#Artist}}<li>" +
+                       "<a href=\"{{url}}\">{{name}}</a>" + 
+                       "</li>{{/Artist}} </ul>";
+                
+            var html = this.mustache(tpl, response.query.results);
+            new Element('div', {html: html}).inject(this.getElement());   
+
         }.bind(this));
     });
     
@@ -89,7 +106,7 @@ window.addEvent('domready', function() {
     try {
         app.run();
     } catch (e) {
-        app.log(e);
+        throw new Error(e);
     }
 });
 
