@@ -52,7 +52,7 @@ var app = new Dean.Application('#main', function() {
     this.get('#/example/chain', function() {
         this.load('app/templates/chain.html')
             .then(function(html) {
-                console.log(this);
+                new Element('div', {html: html}).inject(this.getElement());
             });
     });
     
