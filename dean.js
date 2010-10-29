@@ -1133,21 +1133,13 @@ Dean.namespace('Dean.Logger.Firebug');
  * @link www.unsicherheitsagent.de
  */
 Dean.Logger.Firebug = function() {
+    try {
+        this.logger('firebug', function() {
+            console.log.pass(arguments).call();
+        });
 
-    if (typeOf(console) !== 'object' ||
-        (typeOf(console) == 'object' &&
-         typeOf(console.log) !== 'function'
-        )
-    ) {
-        return;
-    }
-
-    this.logger('firebug', function() {
-        console.log.pass(arguments).call();
-    });
-
-    this.helper('firebugClear', console.clear);
-
+        this.helper('firebugClear', console.clear);
+    } catch(e) {}
 }/**
  *
  * Copyright (c) 2010, Sven Eisenschmidt.

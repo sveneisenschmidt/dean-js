@@ -67,12 +67,19 @@ var app = new Dean.Application('#main', function() {
     });   
     
 
-    
+    this.use(Dean.Service.YQL);
+    this.use(Dean.Template.Mustache);
     this.get('#/example/service/yql', function() {
-        this.use(Dean.Service.YQL);
-        this.yql('SELECT * FROM flickr.photos.search WHERE text="cat"', function(response) {
-            this.log(response.query.results.photo);
-            this.log('look at my wonderful kitten pictures');
+        this.yql('SELECT * FROM flickr.photos.search WHERE text="cat" LIMIT 5', function(response) {
+            
+            var html = '<h2>Images from Flickt with text `cat`</h2>';  
+            
+            Array.each(response.query.results.photo, function(photo) {
+                var img   = '<img width="100" height="100" src="http://farm{{farm}}.static.flickr.com/{{server}}/{{id}}_{{secret}}.jpg" title="{{title}}"/>';
+                    html += this.mustache(img, photo);
+            }.bind(this));      
+            
+            new Element('div', {html: html}).inject(this.getElement());  
         }.bind(this));
     });
     
@@ -82,7 +89,7 @@ window.addEvent('domready', function() {
     try {
         app.run();
     } catch (e) {
-        console.log(e);
+        app.log(e);
     }
 });
 
