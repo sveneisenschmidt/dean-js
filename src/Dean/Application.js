@@ -307,9 +307,19 @@ Dean.Application = new Class({
             return true;
         } else 
 
-        if(options.only) {
-            if(options.only.path && options.only.path.length > 0) {
-                var paths = options.only.path;
+        if('only' in options || 'exclude' in options) {
+            if(('only' in options && options.only.path && options.only.path.length > 0) ||
+               ('exclude' in options && options.exclude.path && options.exclude.path.length > 0)
+            ) {
+                var type  = function(obj) {
+                    if('only' in obj) return obj.only;
+                    return obj.exclude;
+                }(options);
+
+                var paths = type.path;
+                    if(typeOf(paths) == 'string') {
+                        paths = [paths];
+                    }
                 var match = false;
                 
                 Array.each(paths, function(path) {
@@ -318,7 +328,8 @@ Dean.Application = new Class({
                     }
                     route.match(path) ? match = true : null;
                 });
-               
+
+               if('exclude' in options) match = !match;
                return match;
             }
         }

@@ -2,14 +2,17 @@
 
 var app = new Dean.Application('#main', function() {
 
-    this.around('#/about', function(callback, context) {
-        var json = context.toJson({data: ["1","2","3"]});
-        console.log(json);
-        callback();
-    });
-    
+//    this.around('#/about', function(callback, context) {
+//        var json = context.toJson({data: ["1","2","3"]});
+//        console.log(json);
+//        callback();
+//    });
+
     this.before(function() {
         this.clear();
+    });
+    this.before({exclude: {path: '#/'}}, function() {
+        this.log('log everywhere except on route #/');
     });
 
     this.get('#/', function() {
