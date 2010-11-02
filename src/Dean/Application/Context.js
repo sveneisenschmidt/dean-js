@@ -119,9 +119,9 @@ Dean.ApplicationContext = new Class({
      * @param Object options
      * @return Object
      */
-    options: function()
+    options: function(poptions, flush)
     {
-        return this.getApplication().setOptions.pass(arguments).call();
+        return this.getApplication().setOptions.apply(this.getApplication(), arguments);
     },
         
     /**

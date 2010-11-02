@@ -54,16 +54,19 @@ Dean.RequestHash = new Class({
 
     _requestData: null,
 
+    _base: '',
+
     /**
      *
      * @param function fn
      * @scope public
      * @return void
      */
-    initialize: function(fn)
+    initialize: function(fn, base)
     {
-        if(!window.location.hash) window.location.hash = '#/';
+        this._base = base || this._base;
 
+        if(!window.location.hash) window.location.hash = this._base;
         this.setRequestData(window.location);
 
         window.addEvent('hashchange', function() {
@@ -102,7 +105,7 @@ Dean.RequestHash = new Class({
      */
     getHash: function()
     {
-        var hash = this._requestData.hash.replace('#/', '').replace('#', '');
+        var hash = this._requestData.hash.replace(this._base, '');
 
         if(hash.substr(-1) == '/') {
             hash = hash.substr(0, hash.length -1)

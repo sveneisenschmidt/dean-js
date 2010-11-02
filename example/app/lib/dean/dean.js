@@ -169,6 +169,31 @@ Dean.Application = new Class({
 
     /**
      *
+     * @var Object
+     */
+    _options: {},
+
+    /**
+     *
+     * @var Object
+     */
+    _defaultOptions: {
+
+        /**
+         *
+         * @var Boolean
+         */
+        throw_errors: true,
+
+        /**
+         *
+         * @var Boolean
+         */
+        base: '#/'
+    },
+
+    /**
+     *
      * @var Function
      */
     _defaultPlugin: function() {
@@ -249,6 +274,8 @@ Dean.Application = new Class({
                 return logger.log.apply(logger, arguments);
             }
         });
+
+        this.options({}, true);
     },
 
     /**
@@ -264,6 +291,7 @@ Dean.Application = new Class({
     initialize: function()
     {
         var args  = Array.clone(arguments);
+        this.use(this._defaultPlugin);
         
         if(typeOf(args[0]) == 'string') {
             this._element = args[0];
@@ -275,8 +303,6 @@ Dean.Application = new Class({
                 this.use(arg);
             }, this);
         }
-        
-        this.use(this._defaultPlugin);
     },
 
     /**
@@ -288,7 +314,7 @@ Dean.Application = new Class({
         this.fireEvent('run');
         this._initElement();
         
-        var base    = base || '#/';
+        var base    = base || this._options.base;
         var request = this.getRequest();        
         var router  = this.getRouter();
 
@@ -300,12 +326,14 @@ Dean.Application = new Class({
         var route   = router.getRoute(url, base);
         
         if(null == route) {
-            throw Error(404);
-        }
-
-        if(!this._executeHooks(route, this._befores)) {
-            this._executeArounds(route, route.execute.pass([url, base], route));
-            this._executeHooks(route, this._afters);
+            if(this.throwErrors()) {
+                throw Error(404);
+            }
+        } else {
+            if(!this._executeHooks(route, this._befores)) {
+                this._executeArounds(route, route.execute.pass([url, base], route));
+                this._executeHooks(route, this._afters);
+            }
         }
     },
    
@@ -561,7 +589,7 @@ Dean.Application = new Class({
     getRequest: function()
     {
         if(null === this._request) {
-            this._request = new Dean.RequestHash(this.run.bind(this));
+            this._request = new Dean.RequestHash(this.run.bind(this), this._options.base);
         }
 
         return this._request;
@@ -670,6 +698,37 @@ Dean.Application = new Class({
         }
 
         return this._loggerProxy;
+    },
+
+    /**
+     *
+     * @return Dean.Application
+     */
+    setOptions: function(data, flush)
+    {
+        if(typeOf(data) == 'boolean') {
+            flush = data;
+            data  = this._defaultOptions;
+        }
+
+        var flush = flush || false;
+        var data  = data || {};
+
+        if(flush) {
+            this._options = this._defaultOptions;
+        }
+
+        this._options = Object.merge(this._options, data);
+        return this;
+    },
+
+    /**
+     *
+     * @return Boolean
+     */
+    throwErrors: function()
+    {
+        return this._options.throw_errors;
     }
 });/**
  *
@@ -792,9 +851,9 @@ Dean.ApplicationContext = new Class({
      * @param Object options
      * @return Object
      */
-    options: function()
+    options: function(poptions, flush)
     {
-        return this.getApplication().setOptions.pass(arguments).call();
+        return this.getApplication().setOptions.apply(this.getApplication(), arguments);
     },
         
     /**
@@ -1691,16 +1750,19 @@ Dean.RequestHash = new Class({
 
     _requestData: null,
 
+    _base: '',
+
     /**
      *
      * @param function fn
      * @scope public
      * @return void
      */
-    initialize: function(fn)
+    initialize: function(fn, base)
     {
-        if(!window.location.hash) window.location.hash = '#/';
+        this._base = base || this._base;
 
+        if(!window.location.hash) window.location.hash = this._base;
         this.setRequestData(window.location);
 
         window.addEvent('hashchange', function() {
@@ -1739,7 +1801,7 @@ Dean.RequestHash = new Class({
      */
     getHash: function()
     {
-        var hash = this._requestData.hash.replace('#/', '').replace('#', '');
+        var hash = this._requestData.hash.replace(this._base, '');
 
         if(hash.substr(-1) == '/') {
             hash = hash.substr(0, hash.length -1)

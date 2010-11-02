@@ -2,45 +2,44 @@
 
 var app = new Dean.Application('#main', function() {
 
-//    this.around('#/about', function(callback, context) {
-//        var json = context.toJson({data: ["1","2","3"]});
-//        console.log(json);
-//        callback();
-//    });
+    this.option('base', '#!/');
+
+    this.around('#!/about', function(callback, context) {
+        var json = context.toJson({data: ["1","2","3"]});
+        console.log(json);
+        callback();
+    });
 
     this.before(function() {
         this.clear();
     });
-    this.before({exclude: {path: '#/'}}, function() {
-        this.log('log everywhere except on route #/');
+    this.before({exclude: {path: '#!/'}}, function() {
+        this.log('log everywhere except on route #!/');
     });
 
-    this.get('#/', function() {
+    this.get('#!/', function() {
         new Element('div', {text: 'Startpage'}).inject(this.getElement());
     });
     
-    this.get('#/article/:id', function() { 
+    this.get('#!/article/:id', function() {
         this.log(this.getParams());
     }, {id: 10});
     
-    this.get('#/about', function() {
+    this.get('#!/about', function() {
 
     });
     
-    this.get('#/redirect', function() {
-        this.redirect('#/about');
+    this.get('#!/redirect', function() {
+        this.redirect('#!/about');
     });
 
     this.get(/#\/hello/g, function() {
 
     });
     
-    this.get('#/forward', function() {
-        this.forward('#/');
+    this.get('#!/forward', function() {
+        this.forward('#!/');
     });
-    
-    
-    
     
     // examples
     
@@ -48,7 +47,7 @@ var app = new Dean.Application('#main', function() {
      *
      * Context chain
      */
-    this.get('#/example/chain', function() {
+    this.get('#!/example/chain', function() {
         this.load('app/templates/chain.html')
             .then(function(html) {
                 new Element('div', {html: html}).inject(this.getElement());
@@ -59,7 +58,7 @@ var app = new Dean.Application('#main', function() {
      * Templates with Mustache
      */
     this.use(Dean.Template.Mustache);
-    this.get('#/example/template/mustache', function() {      
+    this.get('#!/example/template/mustache', function() {
         var html = this.mustache('<h2>Mustache: You have a nice beard, {{name}}!</h2>', {name: 'Dude'});            
         new Element('div', {html: html}).inject(this.getElement());
     });  
@@ -68,7 +67,7 @@ var app = new Dean.Application('#main', function() {
      * Templates with Mooml
      */
     this.use(Dean.Template.Mooml);
-    this.get('#/example/template/mooml', function() {      
+    this.get('#!/example/template/mooml', function() {
         var html = this.mooml(function(data) {
             h2('Mooml: Remember the Milk, ' + data.name + '!');
         }, {name: 'Dude'});     
@@ -78,14 +77,14 @@ var app = new Dean.Application('#main', function() {
     
     
     this.use(Dean.Logger.Firebug);
-    this.get('#/example/logger/firebug', function() {      
+    this.get('#!/example/logger/firebug', function() {
         this.log('Show me in Firebug :)');
     });   
     
 
     this.use(Dean.Service.YQL);
     this.use(Dean.Template.Mustache);
-    this.get('#/example/service/yql', function() {
+    this.get('#!/example/service/yql', function() {
         this.yql('SELECT id, name, url from music.artist.similar WHERE id="306489" LIMIT 5', function(response) {
  
             var tpl  = "<h3>Artists simliar to Alexisonfire (pulled with YQL)</h3>" +
