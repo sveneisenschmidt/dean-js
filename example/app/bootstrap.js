@@ -23,10 +23,6 @@ var app = new Dean.Application('#main', function() {
     this.get('#/about', function() {
 
     });
-
-    this.get('#/ola', function() {
-        alert('ola!');
-    });
     
     this.get('#/redirect', function() {
         this.redirect('#/about');
