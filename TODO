@@ -1,7 +1,6 @@
 TODO
 
 - default params should used when a route should match and params are missing
-- before hook options only.path can have multiple paths through an array consisting of strings and regexes
 - implement error logger
 - implement post, put, delete
 
@@ -15,3 +14,5 @@ DONE
 - implement on .load onFailure callback
 - exclude option for before, after, around hooks
 - implement options (throw_errors etc)
+- before hook options only.path can have multiple paths through an array consisting of strings and regexes
+- exclude/only can accept regex for route matching

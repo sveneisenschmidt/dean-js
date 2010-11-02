@@ -343,19 +343,24 @@ Dean.Application = new Class({
                     if('only' in obj) return obj.only;
                     return obj.exclude;
                 }(options);
-
                 var paths = type.path;
-                    if(typeOf(paths) == 'string') {
+
+                    if(typeOf(paths) == 'string' || typeOf(paths) == 'regexp') {
                         paths = [paths];
                     }
                 var match = false;
                 
                 Array.each(paths, function(path) {
-                    if(typeOf(path) != 'string') {
-                        throw new Error('only string paths are currently supported!');
+                    if(typeOf(path) != 'string' && typeOf(path) != 'regexp') {
+                        throw new Error('only string or regex paths are currently supported!');
                     }
-                    route.match(path) ? match = true : null;
-                });
+
+                    if(typeOf(path) == 'regexp') {
+                        this.getRequest().getRequestUrl().match(path) ? match = true : null;
+                    } else {
+                        route.match(path) ? match = true : null;
+                    }
+                }.bind(this));
 
                if('exclude' in options) match = !match;
                return match;
@@ -491,7 +496,7 @@ Dean.Application = new Class({
             options = {};
         }
 
-        if(typeOf(options) == 'string') {
+        if(typeOf(options) == 'string' || typeOf(options) == 'regexp') {
             options = {only: {path: [options]}};
         } else
 
@@ -501,6 +506,10 @@ Dean.Application = new Class({
 
         if(options.only && typeOf(options.only.path) != 'array') {
             options.only.path = [options.only.path];
+        }
+
+        if(options.exclude && typeOf(options.exclude.path) != 'array') {
+            options.exclude.path = [options.exclude.path];
         }
 
         data.push({

@@ -80,6 +80,16 @@ Dean.RequestHash = new Class({
     /**
      *
      * @scope public
+     * @return string
+     */
+    getRequestUrl: function()
+    {
+        return this._base + this._requestUrl;
+    },
+
+    /**
+     *
+     * @scope public
      * @return void
      */
     _processData: function()
