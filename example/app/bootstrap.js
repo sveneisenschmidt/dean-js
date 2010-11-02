@@ -53,11 +53,7 @@ var app = new Dean.Application('#main', function() {
         this.load('app/templates/chain.html')
             .then(function(html) {
                 new Element('div', {html: html}).inject(this.getElement());
-            })
-            .load('app/templates/chain.html')
-            .then(function(html) {
-                new Element('div', {html: html}).inject(this.getElement());
-            });;
+            });
     });
     
     /**

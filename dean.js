@@ -1024,15 +1024,35 @@ Dean.namespace('Dean.ApplicationContextChain');
  * @link www.unsicherheitsagent.de
  */
 Dean.ApplicationContextChain = new Class({
-    
+
+    /**
+     *
+     * @var Boolean
+     */
     _wait: false,
-    
+
+    /**
+     *
+     * @var Array
+     */
     _queue: [],
-    
+
+    /**
+     *
+     * @var Object
+     */
     _context: null,
-    
+
+    /**
+     *
+     * @var Mixed
+     */
     _last_content: '',
-    
+
+    /**
+     *
+     * @var Mixed
+     */
     _content: '',
     
     /**
@@ -1119,7 +1139,8 @@ Dean.ApplicationContextChain = new Class({
      * 
      * @return Boolean
      */
-    isWaiting: function() {
+    isWaiting: function()
+    {
         return this._wait;
     },
     
@@ -1127,7 +1148,8 @@ Dean.ApplicationContextChain = new Class({
      * 
      * @return void
      */
-    wait: function() {
+    wait: function()
+    {
         this._wait = true;
     }
 });/**
