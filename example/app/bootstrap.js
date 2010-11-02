@@ -3,24 +3,24 @@
 var app = new Dean.Application('#main', function() {
 
     this.option('base', '#!/');
-//
-//    this.around('#!/about', function(callback, context) {
-//        var json = context.toJson({data: ["1","2","3"]});
-//        console.log(json);
-//        callback();
-//    });
 
-//    this.before(function() {
-//        this.clear();
-//    });
+    this.around('#!/about', function(callback, context) {
+        var json = context.toJson({data: ["1","2","3"]});
+        console.log(json);
+        callback();
+    });
+
+    this.before(function() {
+        this.clear();
+    });
 
     this.before(/#!\/hello/g, function() {
         this.log('before: Hello from regex!');
     });
     
-//    this.before({exclude: {path: '#!/'}}, function() {
-//        this.log('log everywhere except on route #!/');
-//    });
+    this.before({exclude: {path: '#!/'}}, function() {
+        this.log('log everywhere except on route #!/');
+    });
 
     this.get('#!/', function() {
         new Element('div', {text: 'Startpage'}).inject(this.getElement());
