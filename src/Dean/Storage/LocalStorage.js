@@ -26,7 +26,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  *
- * @category Template
+ * @category Storage
  * @package Dean
  *
  * @license MIT-Style License
@@ -36,43 +36,25 @@
  *
  */
 
-Dean.namespace('Dean.Template.Mooml');
+Dean.namespace('Dean.Storage.LocalStorage');
 
 /**
- * Dean.Template.Moooml
+ * Dean.Storage.Local
  *
- * @requires http://mootools.net/forge/p/mooml
+ * @requires http://mootools.net/forge/p/storage
  *
- * @category Template
+ * @category Storage
  * @package Dean
  * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
  * @copyright 2010, Sven Eisenschmidt
  * @license MIT-Style License
  * @link www.unsicherheitsagent.de
  */
-Dean.Template.Mooml = function() {
-    
-    this.helper('mooml', function(name, template, data) {
-        
-        var data = data || {};
-        
-        if(typeOf(name) == 'function') {
-            data     = template || {};
-            template = name;
-            name     = 'default';
-        }
-        
-        if (typeOf(template) == 'function' ||
-            typeOf(template) == 'array' 
-        ) {
-            Mooml.register(name, template);
-        }
-        if (typeOf(template) == 'object') {
-            data = template;
-            delete(template);
-        }
-   
-        var el = Mooml.render(name, data);
-        return el;
-    });
+Dean.Storage.LocalStorage = function(options) {
+
+    var storage = new LocalStorage(options);
+
+    this.helper('store',    storage.set.bind(storage));
+    this.helper('retrieve', storage.get.bind(storage));
+    this.helper('remove',   storage.remove.bind(storage));
 }

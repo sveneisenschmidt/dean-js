@@ -1,5 +1,5 @@
 TODO
-- implement post, put, delete
+- implement put, delete
 
 DONE
 
@@ -14,6 +14,7 @@ DONE
 - before hook options only.path can have multiple paths through an array consisting of strings and regexes
 - exclude/only can accept regex for route matching
 - implement error handling
+- implement post
 
 UNCLEAR
 

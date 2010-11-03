@@ -27,6 +27,10 @@ var app = new Dean.Application('#main', function() {
 
     this.get('#!/', function() {
         new Element('div', {text: 'Startpage'}).inject(this.getElement());
+
+        this.log(this)
+
+
     });
     
     this.get('#!/article/:id', function() {
@@ -100,13 +104,17 @@ var app = new Dean.Application('#main', function() {
         html.inject(this.getElement());
     });  
     
-    
+    /**
+     *  Firebug Logging
+     */
     this.use(Dean.Logger.Firebug);
     this.get('#!/example/logger/firebug', function() {
         this.log('Show me in Firebug :)');
     });   
     
-
+    /**
+     *  YQL Request
+     */
     this.use(Dean.Service.YQL);
     this.use(Dean.Template.Mustache);
     this.get('#!/example/service/yql', function() {
@@ -122,14 +130,43 @@ var app = new Dean.Application('#main', function() {
 
         }.bind(this));
     });
+
+    /**
+     *  Local Storage
+     */
+    this.use(Dean.Storage.LocalStorage, {duration: 60*60*24*30});
+    this.get('#!/example/storage/local-storage', function() {
+
+        var data = this.retrieve('storage.example') || [];
+
+        if(data.length > 0) {
+            var tpl  = "<h3>Last stored inputs</h3>" +
+                       "<ul> {{#Inputs}}<li>{{.}}</li>{{/Inputs}} </ul>" +
+                       "<a href='#!/example/storage/local-storage-clear'>clear storage</a>";
+
+            var html = this.mustache(tpl, {Inputs: data});
+            new Element('div', {html: html}).inject(this.getElement());
+        }
+        new Element('a', {text: 'new Input', href: "#"}).addEvent('click', function(event) {
+            event.preventDefault();
+            var text = prompt('Please input some text:');
+            if(!text) return;
+            data.push(text);
+            this.store('storage.example', data);
+            this.forward('#!/example/storage/local-storage');
+        }.bind(this)).inject(this.getElement());
+
+    });
+    this.get('#!/example/storage/local-storage-clear', function() {
+        this.remove('storage.example');
+        this.redirect('#!/example/storage/local-storage');
+    });
     
 });
 
 window.addEvent('domready', function() {
     app.run();
 });
-
-
 
 
 

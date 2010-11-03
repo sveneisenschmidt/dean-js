@@ -41,6 +41,8 @@ Dean.namespace('Dean.Template.Mustache');
 /**
  * Dean.Template.Mustache
  *
+ * @requires http://mustache.github.com/
+ * 
  * @category Template
  * @package Dean
  * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>

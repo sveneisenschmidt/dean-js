@@ -157,7 +157,7 @@ Dean.Application = new Class({
              */
             redirect: function(route) {
                 window.location.hash = route;
-            },            
+            },
             
             /**
              *

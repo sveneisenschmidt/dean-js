@@ -230,7 +230,7 @@ Dean.Application = new Class({
              */
             redirect: function(route) {
                 window.location.hash = route;
-            },            
+            },
             
             /**
              *
@@ -406,8 +406,6 @@ Dean.Application = new Class({
         if(hash.trim() == '') {
             hash = this.getRequest().getRequestUrl();
         }
-
-
         this.run(hash, base, mode, data);
     },
    
@@ -2394,6 +2392,65 @@ Dean.Service.YQL = function() {
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  *
+ * @category Storage
+ * @package Dean
+ *
+ * @license MIT-Style License
+ * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
+ * @copyright 2010, Sven Eisenschmidt
+ * @link www.unsicherheitsagent.de
+ *
+ */
+
+Dean.namespace('Dean.Storage.LocalStorage');
+
+/**
+ * Dean.Storage.Local
+ *
+ * @requires http://mootools.net/forge/p/storage
+ *
+ * @category Storage
+ * @package Dean
+ * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
+ * @copyright 2010, Sven Eisenschmidt
+ * @license MIT-Style License
+ * @link www.unsicherheitsagent.de
+ */
+Dean.Storage.LocalStorage = function(options) {
+
+    var storage = new LocalStorage(options);
+
+    this.helper('store',    storage.set.bind(storage));
+    this.helper('retrieve', storage.get.bind(storage));
+    this.helper('remove',   storage.remove.bind(storage));
+}/**
+ *
+ * Copyright (c) 2010, Sven Eisenschmidt.
+ * All rights reserved.
+ *
+ * Redistribution with or without modification, are permitted.
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following
+ * conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ *
  * @category Template
  * @package Dean
  *
@@ -2408,6 +2465,8 @@ Dean.namespace('Dean.Template.Mooml');
 
 /**
  * Dean.Template.Moooml
+ *
+ * @requires http://mootools.net/forge/p/mooml
  *
  * @category Template
  * @package Dean
@@ -2484,6 +2543,8 @@ Dean.namespace('Dean.Template.Mustache');
 /**
  * Dean.Template.Mustache
  *
+ * @requires http://mustache.github.com/
+ * 
  * @category Template
  * @package Dean
  * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
