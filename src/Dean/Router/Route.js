@@ -91,7 +91,7 @@ Dean.RouterRoute = new Class({
     {
         this._mode      = mode || 'get',
         this._hash      = hash || '',
-        this._params    = params,
+        this._params    = params || {},
         this._fn        = fn,
         this._context   = context;
     },
@@ -189,5 +189,16 @@ Dean.RouterRoute = new Class({
             regex = regex.replace(/[/]+/g, '\\/');
             
             return regex;
+    },
+
+    /**
+     *
+     * @param Object params
+     * @return void
+     */
+    setParams: function(params)
+    {
+        var params = params || {};
+        this._params = Object.merge(this._params, params);
     }
 });

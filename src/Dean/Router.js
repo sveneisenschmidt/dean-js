@@ -50,6 +50,10 @@ Dean.namespace('Dean.Router');
  */
 Dean.Router = new Class({
 
+    /**
+     *
+     * @var Object
+     */
     _routes: {
         get: [],
         post: [],
@@ -101,6 +105,7 @@ Dean.Router = new Class({
         var mode = mode || 'get';
         var base = base || '';
         var routeToReturn = null;
+
 
         this.getRoutes(mode).each(function(route) {
            if(route.match(search, base) == true && routeToReturn == null) {

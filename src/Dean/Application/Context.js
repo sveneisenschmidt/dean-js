@@ -280,7 +280,7 @@ Dean.ApplicationContext = new Class({
      */
     post: function(hash, fn, params)
     {
-        throw new Error('post not yet implemented');
+        return this._applyRoute('post', arguments);
     },
     
     /**

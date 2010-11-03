@@ -191,6 +191,19 @@ Dean.Application = new Class({
          */
         base: '#/'
     },
+    
+    /**
+     *
+     * @var Object
+     */
+    _tmp: {
+
+        /**
+         *
+         * @var Array
+         */
+        formbinds: []
+    },
 
     /**
      *
@@ -309,11 +322,14 @@ Dean.Application = new Class({
      *
      * @return void
      */
-    run: function(url, base)
-    {          
+    run: function(url, base, mode, params)
+    {
+        var params = params || {};
+        var mode   = mode || 'get';
+        
         this.fireEvent('run');
         this._initElement();
-        
+
         var base    = base || this._options.base;
         var request = this.getRequest();        
         var router  = this.getRouter();
@@ -322,13 +338,14 @@ Dean.Application = new Class({
         if(String.contains(url, base)) {
             url = url.replace(base, '');
         }
-        
-        var route   = router.getRoute('get', url, base);
-        
+
+        var route = router.getRoute(mode, url, base);
+
         try {
             if(null == route) {
                 this.error('Not found!', 404);
             } else {
+                route.setParams(params);
                 if(!this._executeHooks(route, this._befores)) {
                     this._executeArounds(route, route.execute.pass([url, base], route));
                     this._executeHooks(route, this._afters);
@@ -337,6 +354,61 @@ Dean.Application = new Class({
         } catch (e) {
             this.error(e);
         }
+
+        window.addEvent('dean-form-rebind', this.initForms.bind(this));
+        this.initForms();
+    },
+    
+    /**
+     *
+     * @return void
+     */
+    initForms: function()
+    {
+        this._initForms.delay(100, this);
+    },
+
+    /**
+     *
+     * @return void
+     */
+    _initForms: function()
+    {
+        var els = this.getElements('form input[type="submit"]');
+        var fn  = this._postSubmit.bind(this);
+                  this._tmp.formbinds.push({name: 'click', func: fn});
+
+        Array.each(this._tmp.formbinds, function(bind) {
+            els.removeEvent(bind.name, bind.func)
+        });
+
+        els.addEvent('click', fn);
+    },
+    
+    /**
+     *
+     * @return void
+     */
+    _postSubmit: function(event)
+    {
+        event.preventDefault();
+
+        var base = this._options.base;
+        var form = event.target.getParent('form');
+        var mode = form.getProperty('method') || 'POST';
+            mode = mode.toLowerCase();
+            
+        var hash = form.getProperty('action') || '';
+            hash = hash.replace(this._options.base, '');
+
+        var data = this._toPairs(form);
+
+        if(hash.trim() == '') {
+            hash = this.getRequest().getRequestUrl();
+        }
+
+
+        this.run(hash, base, mode, data);
     },
    
     /**
@@ -762,6 +834,46 @@ Dean.Application = new Class({
         } else {
             this.getLoggerProxy().log(code, message);
         }
+    },
+
+    /**
+     * From http://mootools.net/blog/2010/05/18/a-magical-journey-into-the-base-fx-class/
+     *
+     * @param Element Form
+     * @return Object
+     */
+    _toPairs: function(form)
+    {
+        var json  = {};
+        var multi = {};
+
+        form.getElements('input, select, textarea', true).each(function(el){
+            if (!el.name || el.disabled || el.type == 'submit' || el.type == 'reset' || el.type == 'file') return;
+            var value = (el.tagName.toLowerCase() == 'select') ? Element.getSelected(el).map(function(opt){
+                return opt.value;
+            }) : ((el.type == 'radio' || el.type == 'checkbox') && !el.checked) ? null : el.value;
+            $splat(value).each(function(val){
+                if (typeof val != 'undefined') json[el.name] = val;
+            });
+        });
+
+        Object.each(json, function(value, key) {
+            var obj = {};
+            if(key.test(/\[(.*)\]/)) {
+                key = key.replace(/\[/g, '.').replace(/\]/g, '');
+                var string = '${part}';
+                Array.each(key.split('.'), function(part) {
+                    string = string.replace('${part}', '{' + part +  ': ${part}}');
+                });
+                string = string.replace('${part}', JSON.encode(value));
+                obj = JSON.decode(string);
+            } else {
+                obj[key] = value;
+            }
+            multi = Object.merge(multi, obj);
+        });
+
+        return multi;
     }
 });/**
  *
@@ -1045,7 +1157,7 @@ Dean.ApplicationContext = new Class({
      */
     post: function(hash, fn, params)
     {
-        throw new Error('post not yet implemented');
+        return this._applyRoute('post', arguments);
     },
     
     /**
@@ -1224,15 +1336,21 @@ Dean.ApplicationContextChain = new Class({
             throw new Error('resource is no string!');
         }
         this.wait();
-        
+
         var fn      = this.next.bind(this);
         var options = options || {};
+        var complete = options.onComplete || Function.from();
+
+
         var request = new Request(Object.append(options, {
             url: resource,
             async: true,
             method: 'get',
             onSuccess: fn,
-            onFailure: fn
+            onComplete: function() {
+                complete.pass(arguments).call();
+                window.fireEvent('dean-form-rebind');
+            }
         })).send();
         
         return this;
@@ -1916,6 +2034,10 @@ Dean.namespace('Dean.Router');
  */
 Dean.Router = new Class({
 
+    /**
+     *
+     * @var Object
+     */
     _routes: {
         get: [],
         post: [],
@@ -1967,6 +2089,7 @@ Dean.Router = new Class({
         var mode = mode || 'get';
         var base = base || '';
         var routeToReturn = null;
+
 
         this.getRoutes(mode).each(function(route) {
            if(route.match(search, base) == true && routeToReturn == null) {
@@ -2070,7 +2193,7 @@ Dean.RouterRoute = new Class({
     {
         this._mode      = mode || 'get',
         this._hash      = hash || '',
-        this._params    = params,
+        this._params    = params || {},
         this._fn        = fn,
         this._context   = context;
     },
@@ -2168,6 +2291,17 @@ Dean.RouterRoute = new Class({
             regex = regex.replace(/[/]+/g, '\\/');
             
             return regex;
+    },
+
+    /**
+     *
+     * @param Object params
+     * @return void
+     */
+    setParams: function(params)
+    {
+        var params = params || {};
+        this._params = Object.merge(this._params, params);
     }
 });/**
  *

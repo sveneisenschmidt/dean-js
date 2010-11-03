@@ -149,15 +149,21 @@ Dean.ApplicationContextChain = new Class({
             throw new Error('resource is no string!');
         }
         this.wait();
-        
+
         var fn      = this.next.bind(this);
         var options = options || {};
+        var complete = options.onComplete || Function.from();
+
+
         var request = new Request(Object.append(options, {
             url: resource,
             async: true,
             method: 'get',
             onSuccess: fn,
-            onFailure: fn
+            onComplete: function() {
+                complete.pass(arguments).call();
+                window.fireEvent('dean-form-rebind');
+            }
         })).send();
         
         return this;

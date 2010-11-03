@@ -48,6 +48,23 @@ var app = new Dean.Application('#main', function() {
     this.get('#!/forward', function() {
         this.forward('#!/');
     });
+
+    this.get('#!/example/form', function() {
+        this.load('app/templates/form.html')
+            .then(function(html) {
+                new Element('div', {html: html}).inject(this.getElement());
+            });
+    });
+
+    this.post('#!/example/form', function() {
+        var params = this.getParams();
+        var json   = this.toJson(params);
+
+        new Element('h3', {text: 'Post data, formatted in Json for readability:'}).inject(this.getElement());
+        new Element('div', {text: json}).inject(this.getElement());
+
+
+    });
     
     // examples
     
