@@ -50,7 +50,12 @@ Dean.namespace('Dean.Router');
  */
 Dean.Router = new Class({
 
-    _routes: [],
+    _routes: {
+        get: [],
+        post: [],
+        put: [],
+        del: []
+    },
 
     /**
      *
@@ -60,8 +65,12 @@ Dean.Router = new Class({
      */
     addRoute: function(mode, hash, fn, params, context)
     {
+        if(this._routes[mode] == undefined) {
+            throw new Error('Mode "'+ mode +'" is not supported!');
+        }
+
         var route = new Dean.RouterRoute(mode, hash, fn, params, context);
-        this._routes.push(route);
+        this._routes[mode].push(route);
 
         return route;
     },
@@ -70,21 +79,30 @@ Dean.Router = new Class({
      *
      * @return Array
      */
-    getRoutes: function()
+    getRoutes: function(mode)
     {
-        return this._routes;
+        if(mode == undefined) {
+            return this._routes;
+        }
+
+        if(this._routes[mode] == undefined) {
+            return null;
+        }
+
+        return this._routes[mode];
     },
 
     /**
      *
      * @return Dean.RouterRoute|null
      */
-    getRoute: function(search, base)
+    getRoute: function(mode, search, base)
     {
+        var mode = mode || 'get';
         var base = base || '';
         var routeToReturn = null;
 
-        this.getRoutes().each(function(route) {
+        this.getRoutes(mode).each(function(route) {
            if(route.match(search, base) == true && routeToReturn == null) {
                routeToReturn = route;
                route._context._fn = route._fn;

@@ -250,7 +250,7 @@ Dean.Application = new Class({
             url = url.replace(base, '');
         }
         
-        var route   = router.getRoute(url, base);
+        var route   = router.getRoute('get', url, base);
         
         try {
             if(null == route) {
