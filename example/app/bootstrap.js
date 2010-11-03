@@ -2,7 +2,10 @@
 
 var app = new Dean.Application('#main', function() {
 
-    this.option('base', '#!/');
+    this.options({
+        base: '#!/',
+        throw_errors: true
+    });
 
     this.around('#!/about', function(callback, context) {
         var json = context.toJson({data: ["1","2","3"]});
@@ -106,11 +109,7 @@ var app = new Dean.Application('#main', function() {
 });
 
 window.addEvent('domready', function() {
-    try {
-        app.run();
-    } catch (e) {
-        throw new Error(e);
-    }
+    app.run();
 });
 
 

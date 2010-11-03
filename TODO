@@ -1,7 +1,4 @@
 TODO
-
-- default params should used when a route should match and params are missing
-- implement error logger
 - implement post, put, delete
 
 DONE
@@ -16,3 +13,10 @@ DONE
 - implement options (throw_errors etc)
 - before hook options only.path can have multiple paths through an array consisting of strings and regexes
 - exclude/only can accept regex for route matching
+- implement error handling
+
+UNCLEAR
+
+- default params should used when a route should match and params are missing
+    (at the end a route should not match at all when params at the end are missing, ath the other hand
+     it could match cause they're given-in via route params on setupt)

@@ -325,15 +325,17 @@ Dean.Application = new Class({
         
         var route   = router.getRoute(url, base);
         
-        if(null == route) {
-            if(this.throwErrors()) {
-                throw Error(404);
+        try {
+            if(null == route) {
+                this.error('Not found!', 404);
+            } else {
+                if(!this._executeHooks(route, this._befores)) {
+                    this._executeArounds(route, route.execute.pass([url, base], route));
+                    this._executeHooks(route, this._afters);
+                }
             }
-        } else {
-            if(!this._executeHooks(route, this._befores)) {
-                this._executeArounds(route, route.execute.pass([url, base], route));
-                this._executeHooks(route, this._afters);
-            }
+        } catch (e) {
+            this.error(e);
         }
     },
    
@@ -425,7 +427,7 @@ Dean.Application = new Class({
                 
                 Array.each(paths, function(path) {
                     if(typeOf(path) != 'string' && typeOf(path) != 'regexp') {
-                        throw new Error('only string or regex paths are currently supported!');
+                        this.error('only string or regex paths are currently supported!');
                     }
 
                     if(typeOf(path) == 'regexp') {
@@ -738,6 +740,28 @@ Dean.Application = new Class({
     throwErrors: function()
     {
         return this._options.throw_errors;
+    },
+
+    /**
+     *
+     * @param String message
+     * @param Integer code
+     * @param Boolean rethrow
+     * @return void
+     */
+    error: function(message, code, rethrow)
+    {
+        var code = code || 500;
+        
+        if(this.throwErrors()) {
+            if(typeOf(message) == 'object') {
+                throw message;
+            } else {
+                throw new Error(code + ': ' + message);
+            }
+        } else {
+            this.getLoggerProxy().log(code, message);
+        }
     }
 });/**
  *
