@@ -92,6 +92,18 @@ Dean.Application = new Class({
      *
      * @var Array
      */
+    _requires: [],
+
+    /**
+     *
+     * @var Array
+     */
+    _required: [],
+
+    /**
+     *
+     * @var Array
+     */
     _arounds: [],
 
     /**
@@ -249,7 +261,25 @@ Dean.Application = new Class({
      *
      * @return void
      */
-    run: function(url, base, mode, params)
+    run: function()
+    {
+        var fn = this._run.pass(arguments, this);      
+        
+        Array.each(this._requires, function(path, index) {
+            if(!this._required.contains(path)) {
+                fn = Asset.javascript.pass([path, {
+                    events: {
+                        load: fn
+                    }    
+                }], Asset);
+                this._required.push(path);
+            }
+        }.bind(this));
+
+        fn.call();
+    },
+    
+    _run: function(url, base, mode, params)
     {
         var params = params || {};
         var mode   = mode || 'get';
@@ -759,6 +789,30 @@ Dean.Application = new Class({
         } else {
             this.getLoggerProxy().log(code, message);
         }
+    },
+
+    /**
+     *
+     * @param String|Array paths
+     * @return void
+     */
+    require: function(paths)
+    {
+        paths = paths || [];
+        
+        if(typeOf(paths) == 'string') {
+            paths = Array.from(paths);
+        }
+        
+        if(typeOf(paths) != 'array') {
+            return;
+        }
+        
+        Array.each(paths, function(path) {
+            if(!this._requires.contains(path)) {
+                this._requires.push(path);
+            }
+        }.bind(this));
     },
 
     /**

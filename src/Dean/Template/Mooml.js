@@ -52,6 +52,8 @@ Dean.namespace('Dean.Template.Mooml');
  */
 Dean.Template.Mooml = function() {
     
+    this.require('https://github.com/eneko/mooml/raw/1.3.0/Source/mooml.js');
+    
     this.helper('mooml', function(name, template, data) {
         
         var data = data || {};

@@ -88,6 +88,17 @@ Dean.ApplicationContext = new Class({
     {
         return this.register(name, this.getApplication().addHelper(name, fn));
     },
+        
+    /**
+     *
+     * @param String path
+     * @return Object
+     */
+    require: function(path)
+    {
+        this.getApplication().require.apply(this.getApplication(), arguments);
+        return this;
+    },
 
     /**
      *

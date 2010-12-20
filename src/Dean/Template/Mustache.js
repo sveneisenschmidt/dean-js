@@ -51,5 +51,10 @@ Dean.namespace('Dean.Template.Mustache');
  * @link www.unsicherheitsagent.de
  */
 Dean.Template.Mustache = function() {
-    this.helper('mustache', Mustache.to_html); 
+    
+    this.require('https://github.com/janl/mustache.js/raw/0.3.0/mustache.js');
+    
+    this.helper('mustache', function(template, view, partials, fn) {
+        return Mustache.to_html(template, view, partials, fn);
+    }); 
 }

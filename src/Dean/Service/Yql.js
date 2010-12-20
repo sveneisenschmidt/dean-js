@@ -48,17 +48,11 @@ Dean.namespace('Dean.Service.YQL');
  * @license MIT-Style License
  * @link www.unsicherheitsagent.de
  */
-Dean.Service.YQL = function() {
+Dean.Service.YQL = function() { 
+    
+    this.require('https://github.com/fate/mootools-yql/raw/0.1c/request.yql-min-yc.js');
 
-    this.helper('yql', function(select, fn, format, diagnostics) {
-        var format = format || 'json',
-            diag   = diagnostics || false;
-
-        if(typeOf(fn) == 'function') fn = {onComplete: fn};
-
-        new Request.JSONP(Object.append({
-          url: 'http://query.yahooapis.com/v1/public/yql',
-          data: {q: select, diagnostics: diag, format: format }
-        }, fn)).send();
+    this.helper('yql', function(query, fn, options) {
+        new Request.YQL(query, fn, options).send();
     });
 }

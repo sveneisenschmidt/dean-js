@@ -165,6 +165,18 @@ Dean.Application = new Class({
      *
      * @var Array
      */
+    _requires: [],
+
+    /**
+     *
+     * @var Array
+     */
+    _required: [],
+
+    /**
+     *
+     * @var Array
+     */
     _arounds: [],
 
     /**
@@ -322,7 +334,25 @@ Dean.Application = new Class({
      *
      * @return void
      */
-    run: function(url, base, mode, params)
+    run: function()
+    {
+        var fn = this._run.pass(arguments, this);      
+        
+        Array.each(this._requires, function(path, index) {
+            if(!this._required.contains(path)) {
+                fn = Asset.javascript.pass([path, {
+                    events: {
+                        load: fn
+                    }    
+                }], Asset);
+                this._required.push(path);
+            }
+        }.bind(this));
+
+        fn.call();
+    },
+    
+    _run: function(url, base, mode, params)
     {
         var params = params || {};
         var mode   = mode || 'get';
@@ -835,6 +865,30 @@ Dean.Application = new Class({
     },
 
     /**
+     *
+     * @param String|Array paths
+     * @return void
+     */
+    require: function(paths)
+    {
+        paths = paths || [];
+        
+        if(typeOf(paths) == 'string') {
+            paths = Array.from(paths);
+        }
+        
+        if(typeOf(paths) != 'array') {
+            return;
+        }
+        
+        Array.each(paths, function(path) {
+            if(!this._requires.contains(path)) {
+                this._requires.push(path);
+            }
+        }.bind(this));
+    },
+
+    /**
      * From http://mootools.net/blog/2010/05/18/a-magical-journey-into-the-base-fx-class/
      *
      * @param Element Form
@@ -962,6 +1016,17 @@ Dean.ApplicationContext = new Class({
     helper: function(name, fn)
     {
         return this.register(name, this.getApplication().addHelper(name, fn));
+    },
+        
+    /**
+     *
+     * @param String path
+     * @return Object
+     */
+    require: function(path)
+    {
+        this.getApplication().require.apply(this.getApplication(), arguments);
+        return this;
     },
 
     /**
@@ -2351,78 +2416,13 @@ Dean.namespace('Dean.Service.YQL');
  * @license MIT-Style License
  * @link www.unsicherheitsagent.de
  */
-Dean.Service.YQL = function() {
+Dean.Service.YQL = function() { 
+    
+    this.require('https://github.com/fate/mootools-yql/raw/0.1c/request.yql-min-yc.js');
 
-    this.helper('yql', function(select, fn, format, diagnostics) {
-        var format = format || 'json',
-            diag   = diagnostics || false;
-
-        if(typeOf(fn) == 'function') fn = {onComplete: fn};
-
-        new Request.JSONP(Object.append({
-          url: 'http://query.yahooapis.com/v1/public/yql',
-          data: {q: select, diagnostics: diag, format: format }
-        }, fn)).send();
+    this.helper('yql', function(query, fn, options) {
+        new Request.YQL(query, fn, options).send();
     });
-}/**
- *
- * Copyright (c) 2010, Sven Eisenschmidt.
- * All rights reserved.
- *
- * Redistribution with or without modification, are permitted.
- *
- * Permission is hereby granted, free of charge, to any person
- * obtaining a copy of this software and associated documentation
- * files (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use,
- * copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following
- * conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * @category Storage
- * @package Dean
- *
- * @license MIT-Style License
- * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
- * @copyright 2010, Sven Eisenschmidt
- * @link www.unsicherheitsagent.de
- *
- */
-
-Dean.namespace('Dean.Storage.LocalStorage');
-
-/**
- * Dean.Storage.Local
- *
- * @requires http://mootools.net/forge/p/storage
- *
- * @category Storage
- * @package Dean
- * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
- * @copyright 2010, Sven Eisenschmidt
- * @license MIT-Style License
- * @link www.unsicherheitsagent.de
- */
-Dean.Storage.LocalStorage = function(options) {
-
-    var storage = new LocalStorage(options);
-
-    this.helper('store',    storage.set.bind(storage));
-    this.helper('retrieve', storage.get.bind(storage));
-    this.helper('remove',   storage.remove.bind(storage));
 }/**
  *
  * Copyright (c) 2010, Sven Eisenschmidt.
@@ -2476,6 +2476,8 @@ Dean.namespace('Dean.Template.Mooml');
  * @link www.unsicherheitsagent.de
  */
 Dean.Template.Mooml = function() {
+    
+    this.require('https://github.com/eneko/mooml/raw/1.3.0/Source/mooml.js');
     
     this.helper('mooml', function(name, template, data) {
         
@@ -2553,5 +2555,10 @@ Dean.namespace('Dean.Template.Mustache');
  * @link www.unsicherheitsagent.de
  */
 Dean.Template.Mustache = function() {
-    this.helper('mustache', Mustache.to_html); 
+    
+    this.require('https://github.com/janl/mustache.js/raw/0.3.0/mustache.js');
+    
+    this.helper('mustache', function(template, view, partials, fn) {
+        return Mustache.to_html(template, view, partials, fn);
+    }); 
 }
