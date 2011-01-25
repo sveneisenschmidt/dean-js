@@ -124,8 +124,10 @@
          */
         match: function(search, base)
         {
-            var base   = base || '';
-            var match  = base + search;
+            var match = null;
+            
+            base   = base || '';
+            match  = base + search;
 
             if(typeOf(this._hash) == 'regexp') {
                 return match.test(this._hash);
@@ -159,9 +161,10 @@
          */
         execute: function(search, base)
         {
-            var base   = base || '';
-            var match  = base + search;
-            var params = this._params || {};
+            base   = base || '';
+            
+            var match  = base + search,
+                params = this._params || {};
 
             if(typeOf(this._hash) !== 'regexp') {
                 var regex = new RegExp('^' + this._getRegexString() + '$');
@@ -200,8 +203,7 @@
          */
         setParams: function(params)
         {
-            var params = params || {};
-            this._params = Object.merge(this._params, params);
+            this._params = Object.merge(this._params, params || {});
         }
     });
 

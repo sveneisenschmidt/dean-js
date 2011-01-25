@@ -435,19 +435,16 @@
         {
             event.preventDefault();
 
-            var base = this._options.base;
-            var form = event.target.getParent('form');
-            var mode = form.getProperty('method') || 'POST';
-                mode = mode.toLowerCase();
-
-            var hash = form.getProperty('action') || '';
-                hash = hash.replace(this._options.base, '');
-
-            var data = this._toPairs(form);
+            var base = this._options.base,
+                form = event.target.getParent('form'),
+                mode = (form.getProperty('method') || 'POST').toLowerCase(),
+                hash = (form.getProperty('action') || '').replace(this._options.base, ''),
+                data = this._toPairs(form);
 
             if(hash.trim() == '') {
                 hash = this.getRequest().getRequestUrl();
             }
+            
             this.run(hash, base, mode, data);
         },
 
@@ -458,8 +455,8 @@
          */
         _executeArounds: function(route, fn)
         {
-            var context = new d.ApplicationContext(this);
-            var wrapper = fn;
+            var context = new d.ApplicationContext(this),
+                wrapper = fn;
 
             if(this._arounds.length < 1) {
                 wrapper.call();
@@ -529,14 +526,14 @@
                     var type  = function(obj) {
                         if('only' in obj) return obj.only;
                         return obj.exclude;
-                    }(options);
-                    var paths = type.path;
+                    }(options),
+                        paths = type.path,
+                        match = false;
 
                         if(typeOf(paths) == 'string' || typeOf(paths) == 'regexp') {
                             paths = [paths];
                         }
-                    var match = false;
-
+                        
                     Array.each(paths, function(path) {
                         if(typeOf(path) != 'string' && typeOf(path) != 'regexp') {
                             this.error('only string or regex paths are currently supported!');
@@ -610,9 +607,9 @@
             }        
 
             if(typeOf(arg) == 'function') {
-                var args = Array.clone(arguments);
-                    args.shift();                
-                var context = new d.ApplicationContext(this);
+                var args    = (Array.clone(arguments)).shift(),
+                    context = new d.ApplicationContext(this);
+                    
                     arg.implement(context);
                     arg.apply(context, args);
             }
@@ -733,16 +730,17 @@
          */
         addHelper: function(name, fn)
         {        
+            var stack = [],
+                helperContext = new d.ApplicationHelper(this);
+           
             if(typeOf(name) == 'object') {
-                var stack = [];
                 Object.each(name, function(fnc, key) {
                     stack.push(this.addHelper(key, fnc));
                 }.bind(this));  
                 return stack;
             }        
 
-            var helperContext = new d.ApplicationHelper(this);
-                Object.append(fn, helperContext);
+            Object.append(fn, helperContext);
 
             return this._helper[name] = fn.bind(helperContext);
         },
@@ -792,8 +790,8 @@
                 return null;
             }
 
-            var params = params || {};
-            var helper = this.getHelper(name);
+            var params = params || {},
+                helper = this.getHelper(name);
 
             return helper.apply(null, [params]);        
         },
@@ -841,8 +839,8 @@
                 data  = this._defaultOptions;
             }
 
-            var flush = flush || false;
-            var data  = data || {};
+           flush = flush || false;
+           data  = data || {};
 
             if(flush) {
                 this._options = this._defaultOptions;
@@ -870,7 +868,7 @@
          */
         error: function(message, code, rethrow)
         {
-            var code = code || 500;
+            code = code || 500;
 
             if(this.throwErrors()) {
                 if(typeOf(message) == 'object') {
@@ -915,8 +913,8 @@
          */
         _toPairs: function(form)
         {
-            var json  = {};
-            var multi = {};
+            var json  = {},
+                multi = {};
 
             form.getElements('input, select, textarea', true).each(function(el){
                 if (!el.name || el.disabled || el.type == 'submit' || el.type == 'reset' || el.type == 'file') return;
@@ -1151,17 +1149,17 @@
          */    
         getBase: function(params)
         {
-            var params = params || {};
-            var app   = this.getApplication();
-
-            var base = Object.append({
-                getHelper:      app.getHelper.bind(app),
-                runHelper:      app.runHelper.bind(app),
-                getElement:     app.getElement.bind(app),
-                getElements:    app.getElements.bind(app),
-                getParams:      function() {return params || {};},
-                $chain:          new d.ApplicationContextChain(this)
-            }, app.getHelpers());
+            params = params || {};
+            
+            var app  = this.getApplication(),
+                base = Object.append({
+                    getHelper:      app.getHelper.bind(app),
+                    runHelper:      app.runHelper.bind(app),
+                    getElement:     app.getElement.bind(app),
+                    getElements:    app.getElements.bind(app),
+                    getParams:      function() {return params || {};},
+                    $chain:          new d.ApplicationContextChain(this)
+                }, app.getHelpers());
 
             base.$chain.setRouteContext(base);
             Object.append(base, {
@@ -1422,17 +1420,18 @@
          */
         load: function(resource, options)
         {
+            options = options || {}
+            
             if(typeOf(resource) != 'string') {
                 throw new Error('resource is no string!');
             }
+            
             this.wait();
 
-            var fn      = this.next.bind(this);
-            var options = options || {};
-            var complete = options.onComplete || Function.from();
+            var fn       = this.next.bind(this),
+                complete = options.onComplete || Function.from();
 
-
-            var request = new Request(Object.append(options, {
+            new Request(Object.append(options, {
                 url: resource,
                 async: true,
                 method: 'get',
@@ -1806,9 +1805,9 @@ Element.Events.hashchange = {
             delete(namespace);
         }
 
-        var namespace = namespace || window.location.host;
-        var callback  = callback || Function.from();
-
+        namespace = namespace || window.location.host;
+        callback  = callback || Function.from();
+        
         var getStorage = function() {    
             return new LocalStorage({
                 name: namespace,
@@ -2542,10 +2541,11 @@ Dean.Plugin.Request.JSONP = function() {
          * @return Dean.RouterRoute|null
          */
         getRoute: function(mode, search, base)
-        {
-            var mode = mode || 'get',
-                base = base || '',
-                routeToReturn = null;
+        {            
+            var routeToReturn = null;
+            
+            mode = mode || 'get';
+            base = base || '';
 
             this.getRoutes(mode).each(function(route) {
                if(route.match(search, base) == true && routeToReturn == null) {
@@ -2684,8 +2684,10 @@ Dean.Plugin.Request.JSONP = function() {
          */
         match: function(search, base)
         {
-            var base   = base || '';
-            var match  = base + search;
+            var match = null;
+            
+            base   = base || '';
+            match  = base + search;
 
             if(typeOf(this._hash) == 'regexp') {
                 return match.test(this._hash);
@@ -2719,9 +2721,10 @@ Dean.Plugin.Request.JSONP = function() {
          */
         execute: function(search, base)
         {
-            var base   = base || '';
-            var match  = base + search;
-            var params = this._params || {};
+            base   = base || '';
+            
+            var match  = base + search,
+                params = this._params || {};
 
             if(typeOf(this._hash) !== 'regexp') {
                 var regex = new RegExp('^' + this._getRegexString() + '$');
@@ -2760,8 +2763,7 @@ Dean.Plugin.Request.JSONP = function() {
          */
         setParams: function(params)
         {
-            var params = params || {};
-            this._params = Object.merge(this._params, params);
+            this._params = Object.merge(this._params, params || {});
         }
     });
 

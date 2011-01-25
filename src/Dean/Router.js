@@ -103,10 +103,11 @@
          * @return Dean.RouterRoute|null
          */
         getRoute: function(mode, search, base)
-        {
-            var mode = mode || 'get',
-                base = base || '',
-                routeToReturn = null;
+        {            
+            var routeToReturn = null;
+            
+            mode = mode || 'get';
+            base = base || '';
 
             this.getRoutes(mode).each(function(route) {
                if(route.match(search, base) == true && routeToReturn == null) {

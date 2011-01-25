@@ -147,17 +147,18 @@
          */
         load: function(resource, options)
         {
+            options = options || {}
+            
             if(typeOf(resource) != 'string') {
                 throw new Error('resource is no string!');
             }
+            
             this.wait();
 
-            var fn      = this.next.bind(this);
-            var options = options || {};
-            var complete = options.onComplete || Function.from();
+            var fn       = this.next.bind(this),
+                complete = options.onComplete || Function.from();
 
-
-            var request = new Request(Object.append(options, {
+            new Request(Object.append(options, {
                 url: resource,
                 async: true,
                 method: 'get',

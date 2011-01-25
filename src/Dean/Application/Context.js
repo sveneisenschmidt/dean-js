@@ -201,17 +201,17 @@
          */    
         getBase: function(params)
         {
-            var params = params || {};
-            var app   = this.getApplication();
-
-            var base = Object.append({
-                getHelper:      app.getHelper.bind(app),
-                runHelper:      app.runHelper.bind(app),
-                getElement:     app.getElement.bind(app),
-                getElements:    app.getElements.bind(app),
-                getParams:      function() {return params || {};},
-                $chain:          new d.ApplicationContextChain(this)
-            }, app.getHelpers());
+            params = params || {};
+            
+            var app  = this.getApplication(),
+                base = Object.append({
+                    getHelper:      app.getHelper.bind(app),
+                    runHelper:      app.runHelper.bind(app),
+                    getElement:     app.getElement.bind(app),
+                    getElements:    app.getElements.bind(app),
+                    getParams:      function() {return params || {};},
+                    $chain:          new d.ApplicationContextChain(this)
+                }, app.getHelpers());
 
             base.$chain.setRouteContext(base);
             Object.append(base, {

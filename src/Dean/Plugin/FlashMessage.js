@@ -59,9 +59,9 @@
             delete(namespace);
         }
 
-        var namespace = namespace || window.location.host;
-        var callback  = callback || Function.from();
-
+        namespace = namespace || window.location.host;
+        callback  = callback || Function.from();
+        
         var getStorage = function() {    
             return new LocalStorage({
                 name: namespace,
