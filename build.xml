@@ -24,7 +24,7 @@
     <target name="build-minified-yui">
         <delete file="${basedir}/${name-yc}"/>
         <exec dir="${basedir}" executable="yui-compressor">
-            <arg line="${basedir}/${name-uc} --type js -o ${basedir}/${name-yc}" />
+            <arg line="${basedir}/${name-uc} --type js -o ${basedir}/${name-yc} --verbose" />
         </exec>
     </target>
 

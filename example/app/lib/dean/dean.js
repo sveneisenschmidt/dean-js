@@ -266,7 +266,7 @@
                     var $element;
 
                     if(typeOf(selector) == 'string') {
-                        $element = $$(selector).shift();
+                        $element = window.$$(selector).shift();
                     } else                
                     if(typeOf(selector) == 'element'  ||
                        typeOf(selector) == 'elements' 
@@ -366,12 +366,12 @@
 
         _run: function(url, base, mode, params)
         {
-            var params  = params || {},
-                mode    = mode   || 'get',
-                base    = base || this._options.base,
-                request = this.getRequest(),
-                router  = this.getRouter(),
-                url     = url || request.getRequestUrl(),
+            mode   = mode   || 'get'
+            params = params || {};
+            base   = base   || this._options.base;
+            url    = url    || this.getRequest().getRequestUrl();
+                
+            var router  = this.getRouter(),
                 route   = null;
 
             this.fireEvent('run');
@@ -498,8 +498,8 @@
         _executeHook: function(route, options, fn)
         {
             if(this._isExecutable(route, options)) {
-                var context = new d.ApplicationContext(this);
-                var result  = context.execute(fn, {});
+                var context = new d.ApplicationContext(this),
+                    result  = context.execute(fn, {});
 
                 return !(typeOf(result) == 'boolean' && result === false);
             }
@@ -565,7 +565,7 @@
             if(typeOf($element) !== 'elements' && 
                typeOf($element) !== 'element'
             ) {
-               $element = $$(this._element).shift();
+               $element = window.$$(this._element).shift();
             } 
 
             this._element = $element;
@@ -607,9 +607,10 @@
             }        
 
             if(typeOf(arg) == 'function') {
-                var args    = (Array.clone(arguments)).shift(),
+                var args    = Array.clone(arguments),
                     context = new d.ApplicationContext(this);
                     
+                    args.shift();
                     arg.implement(context);
                     arg.apply(context, args);
             }
@@ -786,13 +787,13 @@
          */
         runHelper: function(name, params)
         {
+            params = params || {}
+            
             if(false === this.hasHelper(name)) {
                 return null;
             }
 
-            var params = params || {},
-                helper = this.getHelper(name);
-
+            var helper = this.getHelper(name);
             return helper.apply(null, [params]);        
         },
 
@@ -927,10 +928,13 @@
             });
 
             Object.each(json, function(value, key) {
-                var obj = {};
+                var obj    = {},
+                    string = '';
+                    
                 if(key.test(/\[(.*)\]/)) {
                     key = key.replace(/\[/g, '.').replace(/\]/g, '');
-                    var string = '${part}';
+                    string = '${part}';
+                    
                     Array.each(key.split('.'), function(part) {
                         string = string.replace('${part}', '{' + part +  ': ${part}}');
                     });
@@ -1264,8 +1268,8 @@
          */
         _applyRoute: function(mode, args)
         {
-            var args = Array.clone(args);
-                args.unshift(mode);
+            args = Array.clone(args);
+            args.unshift(mode);
 
             return this.route.apply(this, args);
         }.protect()
@@ -1585,13 +1589,13 @@
 
 Element.Events.hashchange = {
     onAdd: function(){
-        var _hash  = window.location.hash;
-        var _timer = function() {
-            if(window.location.hash != _hash) {
-                _hash = window.location.hash;
-                this.fireEvent('hashchange');
-            }
-        };
+        var _hash  = window.location.hash,
+            _timer = function() {
+                if(window.location.hash != _hash) {
+                    _hash = window.location.hash;
+                    this.fireEvent('hashchange');
+                }
+            };
         _timer.periodical(100, this);
     }
 };/**
@@ -2724,14 +2728,17 @@ Dean.Plugin.Request.JSONP = function() {
             base   = base || '';
             
             var match  = base + search,
-                params = this._params || {};
+                params = this._params || {},
+                regex, 
+                urlParams, 
+                keys;
 
             if(typeOf(this._hash) !== 'regexp') {
-                var regex = new RegExp('^' + this._getRegexString() + '$');
-                var urlParams = match.match(regex);
-                    urlParams.shift();
+                regex = new RegExp('^' + this._getRegexString() + '$');
+                urlParams = match.match(regex);
+                urlParams.shift();
 
-                var keys = this._hash.match(new RegExp(/:([a-zA-Z0-9_-]+)/g)) || [];
+                keys = this._hash.match(new RegExp(/:([a-zA-Z0-9_-]+)/g)) || [];
 
                 if(keys.length > 0) {
                     Array.each(keys, function(key, index) {
@@ -2888,7 +2895,9 @@ Dean.Plugin.Request.JSONP = function() {
 
         this.helper('mooml', function(name, template, data) {
 
-            var data = data || {};
+            data = data || {};
+            
+            var el;
 
             if(typeOf(name) == 'function') {
                 data     = template || {};
@@ -2906,8 +2915,7 @@ Dean.Plugin.Request.JSONP = function() {
                 delete(template);
             }
 
-            var el = Mooml.render(name, data);
-            return el;
+            return el = Mooml.render(name, data);;
         });
     }
     

@@ -316,8 +316,8 @@
          */
         _applyRoute: function(mode, args)
         {
-            var args = Array.clone(args);
-                args.unshift(mode);
+            args = Array.clone(args);
+            args.unshift(mode);
 
             return this.route.apply(this, args);
         }.protect()

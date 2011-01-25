@@ -164,14 +164,17 @@
             base   = base || '';
             
             var match  = base + search,
-                params = this._params || {};
+                params = this._params || {},
+                regex, 
+                urlParams, 
+                keys;
 
             if(typeOf(this._hash) !== 'regexp') {
-                var regex = new RegExp('^' + this._getRegexString() + '$');
-                var urlParams = match.match(regex);
-                    urlParams.shift();
+                regex = new RegExp('^' + this._getRegexString() + '$');
+                urlParams = match.match(regex);
+                urlParams.shift();
 
-                var keys = this._hash.match(new RegExp(/:([a-zA-Z0-9_-]+)/g)) || [];
+                keys = this._hash.match(new RegExp(/:([a-zA-Z0-9_-]+)/g)) || [];
 
                 if(keys.length > 0) {
                     Array.each(keys, function(key, index) {

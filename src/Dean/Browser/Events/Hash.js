@@ -38,13 +38,13 @@
 
 Element.Events.hashchange = {
     onAdd: function(){
-        var _hash  = window.location.hash;
-        var _timer = function() {
-            if(window.location.hash != _hash) {
-                _hash = window.location.hash;
-                this.fireEvent('hashchange');
-            }
-        };
+        var _hash  = window.location.hash,
+            _timer = function() {
+                if(window.location.hash != _hash) {
+                    _hash = window.location.hash;
+                    this.fireEvent('hashchange');
+                }
+            };
         _timer.periodical(100, this);
     }
 };

@@ -58,7 +58,9 @@
 
         this.helper('mooml', function(name, template, data) {
 
-            var data = data || {};
+            data = data || {};
+            
+            var el;
 
             if(typeOf(name) == 'function') {
                 data     = template || {};
@@ -76,8 +78,7 @@
                 delete(template);
             }
 
-            var el = Mooml.render(name, data);
-            return el;
+            return el = Mooml.render(name, data);;
         });
     }
     

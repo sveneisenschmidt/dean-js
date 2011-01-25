@@ -188,7 +188,7 @@
                     var $element;
 
                     if(typeOf(selector) == 'string') {
-                        $element = $$(selector).shift();
+                        $element = window.$$(selector).shift();
                     } else                
                     if(typeOf(selector) == 'element'  ||
                        typeOf(selector) == 'elements' 
@@ -288,12 +288,12 @@
 
         _run: function(url, base, mode, params)
         {
-            var params  = params || {},
-                mode    = mode   || 'get',
-                base    = base || this._options.base,
-                request = this.getRequest(),
-                router  = this.getRouter(),
-                url     = url || request.getRequestUrl(),
+            mode   = mode   || 'get'
+            params = params || {};
+            base   = base   || this._options.base;
+            url    = url    || this.getRequest().getRequestUrl();
+                
+            var router  = this.getRouter(),
                 route   = null;
 
             this.fireEvent('run');
@@ -420,8 +420,8 @@
         _executeHook: function(route, options, fn)
         {
             if(this._isExecutable(route, options)) {
-                var context = new d.ApplicationContext(this);
-                var result  = context.execute(fn, {});
+                var context = new d.ApplicationContext(this),
+                    result  = context.execute(fn, {});
 
                 return !(typeOf(result) == 'boolean' && result === false);
             }
@@ -487,7 +487,7 @@
             if(typeOf($element) !== 'elements' && 
                typeOf($element) !== 'element'
             ) {
-               $element = $$(this._element).shift();
+               $element = window.$$(this._element).shift();
             } 
 
             this._element = $element;
@@ -529,9 +529,10 @@
             }        
 
             if(typeOf(arg) == 'function') {
-                var args    = (Array.clone(arguments)).shift(),
+                var args    = Array.clone(arguments),
                     context = new d.ApplicationContext(this);
                     
+                    args.shift();
                     arg.implement(context);
                     arg.apply(context, args);
             }
@@ -708,13 +709,13 @@
          */
         runHelper: function(name, params)
         {
+            params = params || {}
+            
             if(false === this.hasHelper(name)) {
                 return null;
             }
 
-            var params = params || {},
-                helper = this.getHelper(name);
-
+            var helper = this.getHelper(name);
             return helper.apply(null, [params]);        
         },
 
@@ -849,10 +850,13 @@
             });
 
             Object.each(json, function(value, key) {
-                var obj = {};
+                var obj    = {},
+                    string = '';
+                    
                 if(key.test(/\[(.*)\]/)) {
                     key = key.replace(/\[/g, '.').replace(/\]/g, '');
-                    var string = '${part}';
+                    string = '${part}';
+                    
                     Array.each(key.split('.'), function(part) {
                         string = string.replace('${part}', '{' + part +  ': ${part}}');
                     });
