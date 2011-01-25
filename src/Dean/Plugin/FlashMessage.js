@@ -26,7 +26,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  *
- * @category Logger
+ * @category Plugin
  * @package Dean
  *
  * @license MIT-Style License
@@ -38,52 +38,57 @@
 
 (function(d) {
     
-    d.ns('Dean.LoggerProxy');
+    d.ns('Dean.Plugin.FlashMessage');
 
     /**
-     * Dean.LoggerProxy
+     * Dean.Plugin.FlashMessage
      *
-     * @category Logger
+     * @category Plugin
      * @package Dean
      * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
      * @copyright 2010, Sven Eisenschmidt
      * @license MIT-Style License
      * @link www.unsicherheitsagent.de
      */
-    d.LoggerProxy = new Class({
+    d.Plugin.FlashMessage = function(namespace, callback) {    
 
-        /**
-         *
-         * @var Object
-         */
-        _logger: {},
+        this.require('https://github.com/arieh/Mootools-Storage/raw/1.2.1a/Source/LocalStorage.js');
 
-        /**
-         *
-         * @return void
-         */
-        log: function()
-        {
-            var args = Array.clone(arguments);
-            Object.each(this._logger, function(logger) {
-                logger.apply(logger, args);
-            });
-        },
-
-        /**
-         *
-         * @param Function fn
-         * @return void
-         */
-        addLogger: function(name, fn)
-        {
-            if(typeOf(fn) != 'function') {
-                throw new Error('param is no function!');
-            }
-
-            this._logger[name] = fn;
-            return fn;
+        if(typeOf(namespace) == 'function') {
+            callback = namespace;
+            delete(namespace);
         }
-    });
+
+        var namespace = namespace || window.location.host;
+        var callback  = callback || Function.from();
+
+        var getStorage = function() {    
+            return new LocalStorage({
+                name: namespace,
+                duration: 3600
+            });
+        }
+
+        this.helper('flash', function(msg) {  
+            var data = getStorage().get('flash.messages') || [];
+                data.push(msg);
+            getStorage().set('flash.messages', data);
+            return;
+        });
+
+
+        this.before(function() {      
+            var data = getStorage().get('flash.messages') || false;
+
+            if(typeOf(data) != 'array' || (typeOf(data) == 'array' && data.length < 1)) {
+                getStorage().set('flash.messages', []);
+                return;
+            }    
+
+            callback.apply(null, [data]);        
+            getStorage().set('flash.messages', []);
+            return;
+        });
+    }
 
 }(Dean));

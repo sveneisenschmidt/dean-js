@@ -36,24 +36,28 @@
  *
  */
 
-Dean.namespace('Dean.Logger.Firebug');
+(function(d) {
+    
+    d.ns('Dean.Logger.Firebug');
 
-/**
- * Dean.Logger.Firebug
- *
- * @category Logger
- * @package Dean
- * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
- * @copyright 2010, Sven Eisenschmidt
- * @license MIT-Style License
- * @link www.unsicherheitsagent.de
- */
-Dean.Logger.Firebug = function() {
-    try {
-        this.logger('firebug', function() {
-            console.log.pass(arguments).call();
-        });
+    /**
+     * Dean.Logger.Firebug
+     *
+     * @category Logger
+     * @package Dean
+     * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
+     * @copyright 2010, Sven Eisenschmidt
+     * @license MIT-Style License
+     * @link www.unsicherheitsagent.de
+     */
+    d.Logger.Firebug = function() {
+        try {
+            this.logger('firebug', function() {
+                console.log.pass(arguments).call();
+            });
 
-        this.helper('firebugClear', console.clear);
-    } catch(e) {}
-}
+            this.helper('firebugClear', console.clear);
+        } catch(e) {}
+    }
+
+}(Dean));

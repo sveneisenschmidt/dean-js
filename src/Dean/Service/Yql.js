@@ -36,23 +36,27 @@
  *
  */
 
-Dean.namespace('Dean.Service.YQL');
-
-/**
- * Dean.Service.YQL
- *
- * @category Logger
- * @package Dean
- * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
- * @copyright 2010, Sven Eisenschmidt
- * @license MIT-Style License
- * @link www.unsicherheitsagent.de
- */
-Dean.Service.YQL = function() { 
+(function(d) {
     
-    this.require('https://github.com/fate/mootools-yql/raw/0.1c/request.yql-min-yc.js');
+    d.ns('Dean.Service.YQL');
 
-    this.helper('yql', function(query, fn, options) {
-        new Request.YQL(query, fn, options).send();
-    });
-}
+    /**
+     * Dean.Service.YQL
+     *
+     * @category Logger
+     * @package Dean
+     * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
+     * @copyright 2010, Sven Eisenschmidt
+     * @license MIT-Style License
+     * @link www.unsicherheitsagent.de
+     */
+    d.Service.YQL = function() { 
+
+        this.require('https://github.com/fate/mootools-yql/raw/0.1c/request.yql-min-yc.js');
+
+        this.helper('yql', function(query, fn, options) {
+            new Request.YQL(query, fn, options).send();
+        });
+    }
+    
+}(Dean));

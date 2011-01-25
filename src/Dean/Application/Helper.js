@@ -36,42 +36,47 @@
  *
  */
 
-Dean.namespace('Dean.ApplicationHelper');
 
-/**
- * Dean.ApplicationHelper
- *
- * @category Application
- * @package Dean
- * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
- * @copyright 2010, Sven Eisenschmidt
- * @license MIT-Style License
- * @link www.unsicherheitsagent.de
- */
-Dean.ApplicationHelper = new Class({
+(function(d) {
+    
+    d.ns('Dean.ApplicationHelper');
 
     /**
+     * Dean.ApplicationHelper
      *
-     * @var Dean.Application
+     * @category Application
+     * @package Dean
+     * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
+     * @copyright 2010, Sven Eisenschmidt
+     * @license MIT-Style License
+     * @link www.unsicherheitsagent.de
      */
-    _application: null,
+    d.ApplicationHelper = new Class({
+
+        /**
+         *
+         * @var Dean.Application
+         */
+        _application: null,
+
+        /*
+         *
+         * @return void
+         */
+        initialize: function(application)
+        {
+            this._application = application;
+        },
+
+        /**
+         *
+         * @return Dean.Application
+         */
+        getApplication: function()
+        {
+            return this._application;
+        }
+
+    });
     
-    /*
-     *
-     * @return void
-     */
-    initialize: function(application)
-    {
-        this._application = application;
-    },
-    
-    /**
-     *
-     * @return Dean.Application
-     */
-    getApplication: function()
-    {
-        return this._application;
-    }
-    
-});
+}(Dean));

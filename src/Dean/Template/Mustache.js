@@ -36,25 +36,29 @@
  *
  */
 
-Dean.namespace('Dean.Template.Mustache');
+(function(d) {
+    
+    d.ns('Dean.Template.Mustache');
 
-/**
- * Dean.Template.Mustache
- *
- * @requires http://mustache.github.com/
- * 
- * @category Template
- * @package Dean
- * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
- * @copyright 2010, Sven Eisenschmidt
- * @license MIT-Style License
- * @link www.unsicherheitsagent.de
- */
-Dean.Template.Mustache = function() {
+    /**
+     * Dean.Template.Mustache
+     *
+     * @requires http://mustache.github.com/
+     * 
+     * @category Template
+     * @package Dean
+     * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
+     * @copyright 2010, Sven Eisenschmidt
+     * @license MIT-Style License
+     * @link www.unsicherheitsagent.de
+     */
+    d.Template.Mustache = function() {
+
+        this.require('https://github.com/janl/mustache.js/raw/0.3.0/mustache.js');
+
+        this.helper('mustache', function(template, view, partials, fn) {
+            return Mustache.to_html(template, view, partials, fn);
+        }); 
+    }
     
-    this.require('https://github.com/janl/mustache.js/raw/0.3.0/mustache.js');
-    
-    this.helper('mustache', function(template, view, partials, fn) {
-        return Mustache.to_html(template, view, partials, fn);
-    }); 
-}
+}(Dean));

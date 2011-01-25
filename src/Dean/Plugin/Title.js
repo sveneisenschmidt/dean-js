@@ -26,7 +26,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  *
- * @category Logger
+ * @category Plugin
  * @package Dean
  *
  * @license MIT-Style License
@@ -38,52 +38,44 @@
 
 (function(d) {
     
-    d.ns('Dean.LoggerProxy');
-
+    d.ns('Dean.Plugin.Title');
+    
     /**
-     * Dean.LoggerProxy
+     * Dean.Plugin.FlashMessage
      *
-     * @category Logger
+     * @category Plugin
      * @package Dean
      * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
      * @copyright 2010, Sven Eisenschmidt
      * @license MIT-Style License
      * @link www.unsicherheitsagent.de
      */
-    d.LoggerProxy = new Class({
+    d.Plugin.Title = function() {    
 
-        /**
-         *
-         * @var Object
-         */
-        _logger: {},
 
-        /**
-         *
-         * @return void
-         */
-        log: function()
-        {
-            var args = Array.clone(arguments);
-            Object.each(this._logger, function(logger) {
-                logger.apply(logger, args);
-            });
-        },
+        this.helper('title', function(title) { 
 
-        /**
-         *
-         * @param Function fn
-         * @return void
-         */
-        addLogger: function(name, fn)
-        {
-            if(typeOf(fn) != 'function') {
-                throw new Error('param is no function!');
+            var set = function(text) {   
+                if(typeOf(text) == 'string') {
+                    document.title = text;
+                }
             }
 
-            this._logger[name] = fn;
-            return fn;
-        }
-    });
+            if(arguments.length < 1) {
+                return {
+                    set: set, 
+                    append: function(text) {
+                        set.apply(null, [document.title + text]);
+                    },    
+                    clear: function() {
+                        document.title = '';
+                    }
+                }
+            }
+
+            set.apply(null, [title]);
+        });
+
+    }
 
 }(Dean));

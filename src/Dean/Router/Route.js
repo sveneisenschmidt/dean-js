@@ -36,169 +36,173 @@
  *
  */
 
-Dean.namespace('Dean.RouterRoute');
-
-/**
- * Application
- *
- * @category Route
- * @package Dean
- * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
- * @copyright 2010, Sven Eisenschmidt
- * @license MIT-Style License
- * @link www.unsicherheitsagent.de
- */
-Dean.RouterRoute = new Class({
+(function(d) {
     
-    /**
-     *
-     * @var Dean.ApplicationContext
-     */
-    _context: null,
-    
-    /**
-     *
-     * @var String
-     */
-    _mode: 'get',
-    
-    /**
-     *
-     * @var String
-     */
-    _hash: '',
-    
-    /**
-     *
-     * @var Object
-     */
-    _params: {},
-        
-    /**
-     *
-     * @var Function
-     */
-    _fn: Function.from,
+    d.ns('Dean.RouterRoute');
 
     /**
+     * Application
      *
-     * @param String mode
-     * @param String hash
-     * @param Object params
-     * @return void
+     * @category Route
+     * @package Dean
+     * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
+     * @copyright 2010, Sven Eisenschmidt
+     * @license MIT-Style License
+     * @link www.unsicherheitsagent.de
      */
-    initialize: function(mode, hash, fn, params, context)
-    {
-        this._mode      = mode || 'get',
-        this._hash      = hash || '',
-        this._params    = params || {},
-        this._fn        = fn,
-        this._context   = context;
-    },
-    
-    /**
-     *
-     * @return Object
-     */
-    getCallback: function()
-    {
-        return this._fn;
-    },
-    
-    /**
-     *
-     * @return Dean.ApplicationContext
-     */
-    getContext: function()
-    {
-        return this._context;
-    },
+    d.RouterRoute = new Class({
 
-    /**
-     *
-     * @param String search
-     * @param String base
-     * @return Boolean
-     */
-    match: function(search, base)
-    {
-        var base   = base || '';
-        var match  = base + search;
+        /**
+         *
+         * @var Dean.ApplicationContext
+         */
+        _context: null,
 
-        if(typeOf(this._hash) == 'regexp') {
-            return match.test(this._hash);
-        } else
-            
-        if(this._hash == match) {
-            return true;
-        } else
-        
-        if(this._isParametrised()) {  
-            return match.test(new RegExp('^' + this._getRegexString() + '$'));  
-        }
-        
-        return false;
-    },
-    
-    /**
-     * 
-     * @return Boolean
-     */
-    _isParametrised: function()
-    {
-        return String.contains(this._hash, ':');
-    }.protect(),
-    
-    /**
-     *
-     * @param String search
-     * @param String base
-     * @return void
-     */
-    execute: function(search, base)
-    {
-        var base   = base || '';
-        var match  = base + search;
-        var params = this._params || {};
+        /**
+         *
+         * @var String
+         */
+        _mode: 'get',
 
-        if(typeOf(this._hash) !== 'regexp') {
-            var regex = new RegExp('^' + this._getRegexString() + '$');
-            var urlParams = match.match(regex);
-                urlParams.shift();
+        /**
+         *
+         * @var String
+         */
+        _hash: '',
 
-            var keys = this._hash.match(new RegExp(/:([a-zA-Z0-9_-]+)/g)) || [];
+        /**
+         *
+         * @var Object
+         */
+        _params: {},
 
-            if(keys.length > 0) {
-                Array.each(keys, function(key, index) {
-                    keys[index] = key.replace(':', '');
-                });
-                params = Object.merge(params, urlParams.associate(keys));
+        /**
+         *
+         * @var Function
+         */
+        _fn: Function.from,
+
+        /**
+         *
+         * @param String mode
+         * @param String hash
+         * @param Object params
+         * @return void
+         */
+        initialize: function(mode, hash, fn, params, context)
+        {
+            this._mode      = mode || 'get',
+            this._hash      = hash || '',
+            this._params    = params || {},
+            this._fn        = fn,
+            this._context   = context;
+        },
+
+        /**
+         *
+         * @return Object
+         */
+        getCallback: function()
+        {
+            return this._fn;
+        },
+
+        /**
+         *
+         * @return Dean.ApplicationContext
+         */
+        getContext: function()
+        {
+            return this._context;
+        },
+
+        /**
+         *
+         * @param String search
+         * @param String base
+         * @return Boolean
+         */
+        match: function(search, base)
+        {
+            var base   = base || '';
+            var match  = base + search;
+
+            if(typeOf(this._hash) == 'regexp') {
+                return match.test(this._hash);
+            } else
+
+            if(this._hash == match) {
+                return true;
+            } else
+
+            if(this._isParametrised()) {  
+                return match.test(new RegExp('^' + this._getRegexString() + '$'));  
             }
-        }
-            
-        this.getContext().execute(this.getCallback(), params);
-    },
-    
-    /**
-     * 
-     * @return String
-     */
-    _getRegexString: function()
-    {
-        var regex = this._hash.replace(/:[a-zA-Z0-9_-]+/g, "([a-zA-Z0-9_-]+)");
-            regex = regex.replace(/[/]+/g, '\\/');
-            
-            return regex;
-    },
 
-    /**
-     *
-     * @param Object params
-     * @return void
-     */
-    setParams: function(params)
-    {
-        var params = params || {};
-        this._params = Object.merge(this._params, params);
-    }
-});
+            return false;
+        },
+
+        /**
+         * 
+         * @return Boolean
+         */
+        _isParametrised: function()
+        {
+            return String.contains(this._hash, ':');
+        }.protect(),
+
+        /**
+         *
+         * @param String search
+         * @param String base
+         * @return void
+         */
+        execute: function(search, base)
+        {
+            var base   = base || '';
+            var match  = base + search;
+            var params = this._params || {};
+
+            if(typeOf(this._hash) !== 'regexp') {
+                var regex = new RegExp('^' + this._getRegexString() + '$');
+                var urlParams = match.match(regex);
+                    urlParams.shift();
+
+                var keys = this._hash.match(new RegExp(/:([a-zA-Z0-9_-]+)/g)) || [];
+
+                if(keys.length > 0) {
+                    Array.each(keys, function(key, index) {
+                        keys[index] = key.replace(':', '');
+                    });
+                    params = Object.merge(params, urlParams.associate(keys));
+                }
+            }
+
+            this.getContext().execute(this.getCallback(), params);
+        },
+
+        /**
+         * 
+         * @return String
+         */
+        _getRegexString: function()
+        {
+            var regex = this._hash.replace(/:[a-zA-Z0-9_-]+/g, "([a-zA-Z0-9_-]+)");
+                regex = regex.replace(/[/]+/g, '\\/');
+
+                return regex;
+        },
+
+        /**
+         *
+         * @param Object params
+         * @return void
+         */
+        setParams: function(params)
+        {
+            var params = params || {};
+            this._params = Object.merge(this._params, params);
+        }
+    });
+
+}(Dean));

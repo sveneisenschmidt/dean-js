@@ -26,7 +26,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  *
- * @category Logger
+ * @category Plugin
  * @package Dean
  *
  * @license MIT-Style License
@@ -38,52 +38,69 @@
 
 (function(d) {
     
-    d.ns('Dean.LoggerProxy');
+    d.ns('Dean.Plugin.Request');
 
     /**
-     * Dean.LoggerProxy
+     * Dean.Plugin.Request
      *
-     * @category Logger
+     * @category Plugin
      * @package Dean
      * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
      * @copyright 2010, Sven Eisenschmidt
      * @license MIT-Style License
      * @link www.unsicherheitsagent.de
      */
-    d.LoggerProxy = new Class({
+    d.Plugin.Request = function() {   
+
+        this.helper('request', function(method, options) { 
+
+            var methods = Dean.Plugin.Request.methods; 
+
+            if(typeOf(method) == 'object') {
+                options = method;
+                delete method;
+            }    
+
+            method  = method  || 'get';
+            options = options || {};        
+
+            if(method in methods) {
+                return methods[method].pass([options]);
+            }   
+
+            throw new Error('Unsupported request method: ' + method);
+        });
+    }
+
+    /**
+     * Dean.Plugin.Request.methods
+     *
+     * @category Plugin
+     * @package Dean
+     * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
+     * @copyright 2010, Sven Eisenschmidt
+     * @license MIT-Style License
+     * @link www.unsicherheitsagent.de
+     */
+    d.Plugin.Request.methods = { 
 
         /**
-         *
-         * @var Object
+         * 
+         * @return Request
          */
-        _logger: {},
-
-        /**
-         *
-         * @return void
-         */
-        log: function()
-        {
-            var args = Array.clone(arguments);
-            Object.each(this._logger, function(logger) {
-                logger.apply(logger, args);
-            });
+        get: function(options) {
+            new Request(Object.merge({method: 'get'}, options));
         },
 
         /**
-         *
-         * @param Function fn
-         * @return void
+         * 
+         * @return Request
          */
-        addLogger: function(name, fn)
-        {
-            if(typeOf(fn) != 'function') {
-                throw new Error('param is no function!');
-            }
-
-            this._logger[name] = fn;
-            return fn;
-        }
-    });
+        post: function(options) {
+            new Request(Object.merge({method: 'post'}, options));
+        }  
+    }
 
 }(Dean));
+
+

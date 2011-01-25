@@ -35,39 +35,44 @@
  *
  */
 
-/**
- * Dean
- *
- * @package Dean
- * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
- * @copyright 2010, Sven Eisenschmidt
- * @license MIT-Style License
- * @link www.unsicherheitsagent.de
- */
-var Dean = {
-
+(function(w) {
+    
     /**
+     * Dean
      *
-     * @var String
+     * @package Dean
+     * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
+     * @copyright 2010, Sven Eisenschmidt
+     * @license MIT-Style License
+     * @link www.unsicherheitsagent.de
      */
-    version: '$version$',
+    
+    w.Dean = {
 
-    /**
-     *
-     * @return Object
-     */
-    namespace: function() {
-        var a=arguments, o=null, i, j, d;
-        for (i=0; i<a.length; i=i+1) {
-            d=(""+a[i]).split(".");
-            o=Dean;
-            for (j=(d[0] == "Dean") ? 1 : 0; j<d.length; j=j+1) {
-                o[d[j]]=o[d[j]] || {};
-                o=o[d[j]];
+        /**
+         *
+         * @var String
+         */
+        version: '$version$',
+
+        /**
+         *
+         * @return Object
+         */
+        ns: function() {
+            var a=arguments, o=null, i, j, d;
+            for (i=0; i<a.length; i=i+1) {
+                d=(""+a[i]).split(".");
+                o=Dean;
+                for (j=(d[0] == "Dean") ? 1 : 0; j<d.length; j=j+1) {
+                    o[d[j]]=o[d[j]] || {};
+                    o=o[d[j]];
+                }
             }
+            return o;
         }
-        return o;
     }
-}
+    
+}(window));
 
 

@@ -36,154 +36,158 @@
  *
  */
 
-Dean.namespace('Dean.ApplicationContextChain');
-
-/**
- * Dean.ApplicationContextChain
- * 
- * Based on Sammy.js RenderContext <http://github.com/quirkey/sammy> 
- * Special thanks to Aaron Quint
- *
- * @category Application
- * @package Dean
- * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
- * @copyright 2010, Sven Eisenschmidt
- * @license MIT-Style License
- * @link www.unsicherheitsagent.de
- */
-Dean.ApplicationContextChain = new Class({
-
-    /**
-     *
-     * @var Boolean
-     */
-    _wait: false,
-
-    /**
-     *
-     * @var Array
-     */
-    _queue: [],
-
-    /**
-     *
-     * @var Object
-     */
-    _context: null,
-
-    /**
-     *
-     * @var Mixed
-     */
-    _last_content: '',
-
-    /**
-     *
-     * @var Mixed
-     */
-    _content: '',
+(function(d) {
     
-    /**
-     *
-     * @param Object context
-     * @return void
-     */
-    setRouteContext: function(context)
-    {
-        var keys = Object.keys(context);
-            keys.filter(function(key) {
-                return !Object.keys(this).contains(key);
-            }.bind(this));
-            
-        this._context = Object.subset(Object.clone(context), keys);
-    },
-    
-    /**
-     *
-     * @param Function fn
-     * @return void
-     */
-    then: function(fn)
-    {
-        if(this.isWaiting()) {
-            this._queue.push(fn);
-        } else {
-            this.wait();
-            setTimeout(function() {
-                var returned = fn.apply(this._context, [this._content, this._last_content]);
-                if (returned !== false) {
-                    this.next(returned);
-                }
-            }.bind(this), 25);
-        }
-        return this;
-    },
-    
-    /**
-     *
-     * @param String content
-     * @return void
-     */
-    next: function(content)
-    {
-        this._wait = false;
-        if (typeof content !== 'undefined') {
-            this._last_content = this.content;
-            this._content = content;
-        }
-        
-        if (this._queue.length > 0) {
-            this.then(this._queue.shift(), this._queue.length);
-        }
-    },
-    
-    /**
-     *
-     * @param String resource
-     * @param Object options
-     * @return string
-     */
-    load: function(resource, options)
-    {
-        if(typeOf(resource) != 'string') {
-            throw new Error('resource is no string!');
-        }
-        this.wait();
+    d.ns('Dean.ApplicationContextChain');
 
-        var fn      = this.next.bind(this);
-        var options = options || {};
-        var complete = options.onComplete || Function.from();
+    /**
+     * Dean.ApplicationContextChain
+     * 
+     * Based on Sammy.js RenderContext <http://github.com/quirkey/sammy> 
+     * Special thanks to Aaron Quint
+     *
+     * @category Application
+     * @package Dean
+     * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
+     * @copyright 2010, Sven Eisenschmidt
+     * @license MIT-Style License
+     * @link www.unsicherheitsagent.de
+     */
+    d.ApplicationContextChain = new Class({
 
+        /**
+         *
+         * @var Boolean
+         */
+        _wait: false,
 
-        var request = new Request(Object.append(options, {
-            url: resource,
-            async: true,
-            method: 'get',
-            onSuccess: fn,
-            onComplete: function() {
-                complete.pass(arguments).call();
-                window.fireEvent('dean-form-rebind');
+        /**
+         *
+         * @var Array
+         */
+        _queue: [],
+
+        /**
+         *
+         * @var Object
+         */
+        _context: null,
+
+        /**
+         *
+         * @var Mixed
+         */
+        _last_content: '',
+
+        /**
+         *
+         * @var Mixed
+         */
+        _content: '',
+
+        /**
+         *
+         * @param Object context
+         * @return void
+         */
+        setRouteContext: function(context)
+        {
+            var keys = Object.keys(context);
+                keys.filter(function(key) {
+                    return !Object.keys(this).contains(key);
+                }.bind(this));
+
+            this._context = Object.subset(Object.clone(context), keys);
+        },
+
+        /**
+         *
+         * @param Function fn
+         * @return void
+         */
+        then: function(fn)
+        {
+            if(this.isWaiting()) {
+                this._queue.push(fn);
+            } else {
+                this.wait();
+                setTimeout(function() {
+                    var returned = fn.apply(this._context, [this._content, this._last_content]);
+                    if (returned !== false) {
+                        this.next(returned);
+                    }
+                }.bind(this), 25);
             }
-        })).send();
-        
-        return this;
-    },
+            return this;
+        },
+
+        /**
+         *
+         * @param String content
+         * @return void
+         */
+        next: function(content)
+        {
+            this._wait = false;
+            if (typeof content !== 'undefined') {
+                this._last_content = this.content;
+                this._content = content;
+            }
+
+            if (this._queue.length > 0) {
+                this.then(this._queue.shift(), this._queue.length);
+            }
+        },
+
+        /**
+         *
+         * @param String resource
+         * @param Object options
+         * @return string
+         */
+        load: function(resource, options)
+        {
+            if(typeOf(resource) != 'string') {
+                throw new Error('resource is no string!');
+            }
+            this.wait();
+
+            var fn      = this.next.bind(this);
+            var options = options || {};
+            var complete = options.onComplete || Function.from();
+
+
+            var request = new Request(Object.append(options, {
+                url: resource,
+                async: true,
+                method: 'get',
+                onSuccess: fn,
+                onComplete: function() {
+                    complete.pass(arguments).call();
+                    window.fireEvent('dean-form-rebind');
+                }
+            })).send();
+
+            return this;
+        },
+
+        /**
+         * 
+         * @return Boolean
+         */
+        isWaiting: function()
+        {
+            return this._wait;
+        },
+
+        /**
+         * 
+         * @return void
+         */
+        wait: function()
+        {
+            this._wait = true;
+        }
+    });
     
-    /**
-     * 
-     * @return Boolean
-     */
-    isWaiting: function()
-    {
-        return this._wait;
-    },
-    
-    /**
-     * 
-     * @return void
-     */
-    wait: function()
-    {
-        this._wait = true;
-    }
-});
+}(Dean));

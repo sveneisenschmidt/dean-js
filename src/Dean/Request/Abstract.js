@@ -36,171 +36,177 @@
  *
  */
 
-Dean.namespace('Dean.RequestAbstract');
-
-/**
- * Dean.RequestAbstract
- *
- * @category Application
- * @package Dean
- * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
- * @copyright 2010, Sven Eisenschmidt
- * @license MIT-Style License
- * @link www.unsicherheitsagent.de
- */
-Dean.RequestAbstract = new Class({
-
-    Implements: [Events],
-
-    _requestUrl: null,
-
-    _protocol: null,
-
-    _host: null,
-
-    _fullPath: null,
-
-    _fullUrl: null,
-
-    _requestParams: {},
-
-    initialize: function() {},
-
+(function(d) {
+    
+    d.ns('Dean.RequestAbstract');
+    
     /**
+     * Dean.RequestAbstract
      *
-     * @param string url The Request url
-     * @scope public
-     * @return void
+     * @category Application
+     * @package Dean
+     * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
+     * @copyright 2010, Sven Eisenschmidt
+     * @license MIT-Style License
+     * @link www.unsicherheitsagent.de
      */
-    setRequestUrl: function(url)
-    {
-        this._requestUrl = url;
-    },
+    d.RequestAbstract = new Class({
 
-    /**
-     *
-     * @param string url The Host url
-     * @scope public
-     * @return void
-     */
-    setHost: function(host)
-    {
-        this._host = host;
-    },
+        Implements: [Events],
 
-    /**
-     *
-     * @param string url The Protocol Type
-     * @scope public
-     * @return void
-     */
-    setProtocol: function (protocol)
-    {
-        this._protocol = protocol;
-    },
+        _requestUrl: null,
 
-    /**
-     *
-     * @param string path The Full Path fo the Request
-     * @scope public
-     * @return void
-     */
-    setFullPath: function (path)
-    {
-        this._fullPath = path;
-    },
+        _protocol: null,
 
-    /**
-     *
-     * @param string path The Full Url fo the Request
-     * @scope public
-     * @return void
-     */
-    setFullUrl: function (url)
-    {
-        this._fullUrl = url;
-    },
+        _host: null,
 
-    /**
-     *
-     * @param string path The Full Url fo the Request
-     * @scope public
-     * @return void
-     */
-    setQuery: function (queryObj)
-    {
-        this._requestParams = queryObj;
+        _fullPath: null,
 
-    },
+        _fullUrl: null,
 
-    /**
-     *
-     * @scope public
-     * @return string
-     */
-    getRequestUrl: function()
-    {
-        return this._requestUrl;
-    },
+        _requestParams: {},
 
-    /**
-     *
-     * @scope public
-     * @return string
-     */
-    getHost: function()
-    {
-        return this._host;
-    },
+        initialize: function() {},
 
-    /**
-     *
-     * @scope public
-     * @return string
-     */
-    getProtocol: function ()
-    {
-        return this._protocol;
-    },
+        /**
+         *
+         * @param string url The Request url
+         * @scope public
+         * @return void
+         */
+        setRequestUrl: function(url)
+        {
+            this._requestUrl = url;
+        },
 
-    /**
-     *
-     * @scope public
-     * @return string
-     */
-    getFullPath: function (path)
-    {
-        return this._fullPath;
-    },
+        /**
+         *
+         * @param string url The Host url
+         * @scope public
+         * @return void
+         */
+        setHost: function(host)
+        {
+            this._host = host;
+        },
 
-    /**
-     *
-     * @scope public
-     * @return string
-     */
-    getFullUrl: function (url)
-    {
-        return  this._fullUrl;
-    },
+        /**
+         *
+         * @param string url The Protocol Type
+         * @scope public
+         * @return void
+         */
+        setProtocol: function (protocol)
+        {
+            this._protocol = protocol;
+        },
 
-    /**
-     *
-     * @scope public
-     * @return string
-     */
-    getAllParams: function()
-    {
-        return this._requestParams;
-    },
+        /**
+         *
+         * @param string path The Full Path fo the Request
+         * @scope public
+         * @return void
+         */
+        setFullPath: function (path)
+        {
+            this._fullPath = path;
+        },
 
-    /**
-     * Mvc_Request_Abstract::setParams
-     *
-     * @scope public
-     * @return string
-     */
-    setParams: function(params)
-    {
-        this._requestParams = params;
-    }
-});
+        /**
+         *
+         * @param string path The Full Url fo the Request
+         * @scope public
+         * @return void
+         */
+        setFullUrl: function (url)
+        {
+            this._fullUrl = url;
+        },
+
+        /**
+         *
+         * @param string path The Full Url fo the Request
+         * @scope public
+         * @return void
+         */
+        setQuery: function (queryObj)
+        {
+            this._requestParams = queryObj;
+
+        },
+
+        /**
+         *
+         * @scope public
+         * @return string
+         */
+        getRequestUrl: function()
+        {
+            return this._requestUrl;
+        },
+
+        /**
+         *
+         * @scope public
+         * @return string
+         */
+        getHost: function()
+        {
+            return this._host;
+        },
+
+        /**
+         *
+         * @scope public
+         * @return string
+         */
+        getProtocol: function ()
+        {
+            return this._protocol;
+        },
+
+        /**
+         *
+         * @scope public
+         * @return string
+         */
+        getFullPath: function (path)
+        {
+            return this._fullPath;
+        },
+
+        /**
+         *
+         * @scope public
+         * @return string
+         */
+        getFullUrl: function (url)
+        {
+            return  this._fullUrl;
+        },
+
+        /**
+         *
+         * @scope public
+         * @return string
+         */
+        getAllParams: function()
+        {
+            return this._requestParams;
+        },
+
+        /**
+         * Mvc_Request_Abstract::setParams
+         *
+         * @scope public
+         * @return string
+         */
+        setParams: function(params)
+        {
+            this._requestParams = params;
+        }
+    });
+    
+}(Dean));
+
+

@@ -36,103 +36,107 @@
  *
  */
 
-Dean.namespace('Dean.RequestHash');
+(function(d) {
 
-/**
- * Dean.RequestHash
- *
- * @category Application
- * @package Dean
- * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
- * @copyright 2010, Sven Eisenschmidt
- * @license MIT-Style License
- * @link www.unsicherheitsagent.de
- */
-Dean.RequestHash = new Class({
-
-    Implements: [Dean.RequestAbstract],
-
-    _requestData: null,
-
-    _base: '',
+    d.ns('Dean.RequestHash');
 
     /**
+     * Dean.RequestHash
      *
-     * @param function fn
-     * @scope public
-     * @return void
+     * @category Application
+     * @package Dean
+     * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
+     * @copyright 2010, Sven Eisenschmidt
+     * @license MIT-Style License
+     * @link www.unsicherheitsagent.de
      */
-    initialize: function(fn, base)
-    {
-        this._base = base || this._base;
+    d.RequestHash = new Class({
 
-        if(!window.location.hash) window.location.hash = this._base;
-        this.setRequestData(window.location);
+        Implements: [Dean.RequestAbstract],
 
-        window.addEvent('hashchange', function() {
+        _requestData: null,
+
+        _base: '',
+
+        /**
+         *
+         * @param function fn
+         * @scope public
+         * @return void
+         */
+        initialize: function(fn, base)
+        {
+            this._base = base || this._base;
+
+            if(!window.location.hash) window.location.hash = this._base;
             this.setRequestData(window.location);
-            this.fireEvent('changed');
-        }.bind(this));
 
-        this.removeEvents().addEvent('changed', fn);
-    },
+            window.addEvent('hashchange', function() {
+                this.setRequestData(window.location);
+                this.fireEvent('changed');
+            }.bind(this));
 
-    /**
-     *
-     * @scope public
-     * @return string
-     */
-    getRequestUrl: function()
-    {
-        return this._base + this._requestUrl;
-    },
+            this.removeEvents().addEvent('changed', fn);
+        },
 
-    /**
-     *
-     * @scope public
-     * @return void
-     */
-    _processData: function()
-    {
-        this.setRequestUrl(this.getHash());
-        this.setProtocol(this._requestData.protocol.replace(':', ''));
-        this.setHost(this._requestData.host);
-        this.setFullPath(
-            this.getProtocol() + '://' + this.getHost() + this._requestData.pathname);
+        /**
+         *
+         * @scope public
+         * @return string
+         */
+        getRequestUrl: function()
+        {
+            return this._base + this._requestUrl;
+        },
 
-        this.setFullUrl(this._requestData.href);
+        /**
+         *
+         * @scope public
+         * @return void
+         */
+        _processData: function()
+        {
+            this.setRequestUrl(this.getHash());
+            this.setProtocol(this._requestData.protocol.replace(':', ''));
+            this.setHost(this._requestData.host);
+            this.setFullPath(
+                this.getProtocol() + '://' + this.getHost() + this._requestData.pathname);
 
-        if(this._requestData.search || this._requestData.search != '') {
-            this.setQuery(
-                this._requestData.search.toString().parseQueryString());
+            this.setFullUrl(this._requestData.href);
+
+            if(this._requestData.search || this._requestData.search != '') {
+                this.setQuery(
+                    this._requestData.search.toString().parseQueryString());
+            }
+        }.protect(),
+
+        /**
+         *
+         * @scope public
+         * @return String
+         */
+        getHash: function()
+        {
+            var hash = this._requestData.hash.replace(this._base, '');
+
+            if(hash.substr(-1) == '/') {
+                hash = hash.substr(0, hash.length -1)
+            }
+
+            return hash;
+        },
+
+        /**
+         *
+         * @param data Object The window location object
+         * @scope public
+         * @return void
+         */
+        setRequestData: function(data)
+        {
+            this._requestData = data;
+            this._processData();
         }
-    }.protect(),
+    });
 
-    /**
-     *
-     * @scope public
-     * @return String
-     */
-    getHash: function()
-    {
-        var hash = this._requestData.hash.replace(this._base, '');
-
-        if(hash.substr(-1) == '/') {
-            hash = hash.substr(0, hash.length -1)
-        }
-
-        return hash;
-    },
-
-    /**
-     *
-     * @param data Object The window location object
-     * @scope public
-     * @return void
-     */
-    setRequestData: function(data)
-    {
-        this._requestData = data;
-        this._processData();
-    }
-});
+}(Dean));

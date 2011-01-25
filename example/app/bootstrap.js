@@ -15,6 +15,7 @@ var app = new Dean.Application('#main', function() {
 
     this.before(function() {
         this.clear();
+        this.title('Dean.js - Example App');
     });
 
     this.before(/#!\/hello/g, function() {
@@ -27,10 +28,10 @@ var app = new Dean.Application('#main', function() {
 
     this.get('#!/', function() {
         new Element('div', {text: 'Startpage'}).inject(this.getElement());
+        
+        this.title().append(' - Index');
 
-        this.log(this)
-
-
+        this.log(this);
     });
     
     this.get('#!/article/:id', function() {
@@ -129,6 +130,18 @@ var app = new Dean.Application('#main', function() {
             new Element('div', {html: html}).inject(this.getElement());   
 
         }.bind(this));
+    });
+    
+    /**
+     *  Flash Message Plugin
+     */
+    this.use(Dean.Plugin.FlashMessage, '/example/main/app', function(messages) {        
+        console.log(messages);        
+    });
+    this.get('#!/example/plugin/flash-messages', function() {
+        new Element('div', {text: 'After next request, the flash message will appear in your console.'})
+            .inject(this.getElement());
+        this.flash('Hey! i\'m a flash message!');
     });
     
 });

@@ -26,7 +26,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  *
- * @category Logger
+ * @category Plugin
  * @package Dean
  *
  * @license MIT-Style License
@@ -36,54 +36,26 @@
  *
  */
 
-(function(d) {
+
+/**
+ * Dean.Plugin.Request.JSONP
+ *
+ * @category Plugin
+ * @package Dean
+ * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
+ * @copyright 2010, Sven Eisenschmidt
+ * @license MIT-Style License
+ * @link www.unsicherheitsagent.de
+ */
+Dean.Plugin.Request.JSONP = function() {   
     
-    d.ns('Dean.LoggerProxy');
-
-    /**
-     * Dean.LoggerProxy
-     *
-     * @category Logger
-     * @package Dean
-     * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
-     * @copyright 2010, Sven Eisenschmidt
-     * @license MIT-Style License
-     * @link www.unsicherheitsagent.de
-     */
-    d.LoggerProxy = new Class({
-
+    Dean.Plugin.Request.methods = Object.merge(Dean.Plugin.Request.methods, {     
         /**
-         *
-         * @var Object
+         * 
+         * @return Request.JSONP
          */
-        _logger: {},
-
-        /**
-         *
-         * @return void
-         */
-        log: function()
-        {
-            var args = Array.clone(arguments);
-            Object.each(this._logger, function(logger) {
-                logger.apply(logger, args);
-            });
-        },
-
-        /**
-         *
-         * @param Function fn
-         * @return void
-         */
-        addLogger: function(name, fn)
-        {
-            if(typeOf(fn) != 'function') {
-                throw new Error('param is no function!');
-            }
-
-            this._logger[name] = fn;
-            return fn;
-        }
-    });
-
-}(Dean));
+        jsonp: function(options) {
+            new Request.JSONP(options);
+        }  
+    });    
+}

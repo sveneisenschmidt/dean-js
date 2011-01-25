@@ -36,84 +36,87 @@
  *
  */
 
-Dean.namespace('Dean.Router');
-
-/**
- * Application
- *
- * @category Router
- * @package Dean
- * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
- * @copyright 2010, Sven Eisenschmidt
- * @license MIT-Style License
- * @link www.unsicherheitsagent.de
- */
-Dean.Router = new Class({
+(function(d) {
+    
+    d.ns('Dean.Router');
 
     /**
+     * Application
      *
-     * @var Object
+     * @category Router
+     * @package Dean
+     * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
+     * @copyright 2010, Sven Eisenschmidt
+     * @license MIT-Style License
+     * @link www.unsicherheitsagent.de
      */
-    _routes: {
-        get: [],
-        post: [],
-        put: [],
-        del: []
-    },
+    d.Router = new Class({
 
-    /**
-     *
-     * @param String mode
-     * @param String hash
-     * @return Dean.RouterRoute
-     */
-    addRoute: function(mode, hash, fn, params, context)
-    {
-        if(this._routes[mode] == undefined) {
-            throw new Error('Mode "'+ mode +'" is not supported!');
+        /**
+         *
+         * @var Object
+         */
+        _routes: {
+            get: [],
+            post: [],
+            put: [],
+            del: []
+        },
+
+        /**
+         *
+         * @param String mode
+         * @param String hash
+         * @return Dean.RouterRoute
+         */
+        addRoute: function(mode, hash, fn, params, context)
+        {
+            if(this._routes[mode] == undefined) {
+                throw new Error('Mode "'+ mode +'" is not supported!');
+            }
+
+            var route = new d.RouterRoute(mode, hash, fn, params, context);
+            this._routes[mode].push(route);
+
+            return route;
+        },
+
+        /**
+         *
+         * @return Array
+         */
+        getRoutes: function(mode)
+        {
+            if(mode == undefined) {
+                return this._routes;
+            }
+
+            if(this._routes[mode] == undefined) {
+                return null;
+            }
+
+            return this._routes[mode];
+        },
+
+        /**
+         *
+         * @return Dean.RouterRoute|null
+         */
+        getRoute: function(mode, search, base)
+        {
+            var mode = mode || 'get',
+                base = base || '',
+                routeToReturn = null;
+
+            this.getRoutes(mode).each(function(route) {
+               if(route.match(search, base) == true && routeToReturn == null) {
+                   routeToReturn = route;
+                   route._context._fn = route._fn;
+               }
+            });
+
+            return routeToReturn;
         }
-
-        var route = new Dean.RouterRoute(mode, hash, fn, params, context);
-        this._routes[mode].push(route);
-
-        return route;
-    },
-
-    /**
-     *
-     * @return Array
-     */
-    getRoutes: function(mode)
-    {
-        if(mode == undefined) {
-            return this._routes;
-        }
-
-        if(this._routes[mode] == undefined) {
-            return null;
-        }
-
-        return this._routes[mode];
-    },
-
-    /**
-     *
-     * @return Dean.RouterRoute|null
-     */
-    getRoute: function(mode, search, base)
-    {
-        var mode = mode || 'get';
-        var base = base || '';
-        var routeToReturn = null;
-
-
-        this.getRoutes(mode).each(function(route) {
-           if(route.match(search, base) == true && routeToReturn == null) {
-               routeToReturn = route;
-               route._context._fn = route._fn;
-           }
-        });
-
-        return routeToReturn;
-    }
-});
+    });
+    
+}(Dean));

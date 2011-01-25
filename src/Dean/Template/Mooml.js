@@ -36,45 +36,49 @@
  *
  */
 
-Dean.namespace('Dean.Template.Mooml');
+(function(d) {
+    
+    d.ns('Dean.Template.Mooml');
 
-/**
- * Dean.Template.Moooml
- *
- * @requires http://mootools.net/forge/p/mooml
- *
- * @category Template
- * @package Dean
- * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
- * @copyright 2010, Sven Eisenschmidt
- * @license MIT-Style License
- * @link www.unsicherheitsagent.de
- */
-Dean.Template.Mooml = function() {
+    /**
+     * Dean.Template.Moooml
+     *
+     * @requires http://mootools.net/forge/p/mooml
+     *
+     * @category Template
+     * @package Dean
+     * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
+     * @copyright 2010, Sven Eisenschmidt
+     * @license MIT-Style License
+     * @link www.unsicherheitsagent.de
+     */
+    d.Template.Mooml = function() {
+
+        this.require('https://github.com/eneko/mooml/raw/1.3.0/Source/mooml.js');
+
+        this.helper('mooml', function(name, template, data) {
+
+            var data = data || {};
+
+            if(typeOf(name) == 'function') {
+                data     = template || {};
+                template = name;
+                name     = 'default';
+            }
+
+            if (typeOf(template) == 'function' ||
+                typeOf(template) == 'array' 
+            ) {
+                Mooml.register(name, template);
+            }
+            if (typeOf(template) == 'object') {
+                data = template;
+                delete(template);
+            }
+
+            var el = Mooml.render(name, data);
+            return el;
+        });
+    }
     
-    this.require('https://github.com/eneko/mooml/raw/1.3.0/Source/mooml.js');
-    
-    this.helper('mooml', function(name, template, data) {
-        
-        var data = data || {};
-        
-        if(typeOf(name) == 'function') {
-            data     = template || {};
-            template = name;
-            name     = 'default';
-        }
-        
-        if (typeOf(template) == 'function' ||
-            typeOf(template) == 'array' 
-        ) {
-            Mooml.register(name, template);
-        }
-        if (typeOf(template) == 'object') {
-            data = template;
-            delete(template);
-        }
-   
-        var el = Mooml.render(name, data);
-        return el;
-    });
-}
+}(Dean));
