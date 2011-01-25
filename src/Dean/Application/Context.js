@@ -210,10 +210,10 @@
                     getElement:     app.getElement.bind(app),
                     getElements:    app.getElements.bind(app),
                     getParams:      function() {return params || {};},
-                    $chain:          new d.ApplicationContextChain(this)
+                    $chain:          new d.ApplicationContextChain()
                 }, app.getHelpers());
 
-            base.$chain.setRouteContext(base);
+            base.$chain.setRouteContext(base, this);
             Object.append(base, {
                 then:  base.$chain.then.bind(base.$chain),
                 next:  base.$chain.next.bind(base.$chain),

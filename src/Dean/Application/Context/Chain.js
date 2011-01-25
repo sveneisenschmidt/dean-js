@@ -71,7 +71,13 @@
          *
          * @var Object
          */
-        _context: null,
+        _routeContext: null,
+
+        /**
+         *
+         * @var Dean.ApplicationContext
+         */
+        _applicationContext: null,
 
         /**
          *
@@ -87,17 +93,19 @@
 
         /**
          *
-         * @param Object context
+         * @param Object routeContext
+         * @param Object applicationContext
          * @return void
          */
-        setRouteContext: function(context)
+        setRouteContext: function(routeContext, applicationContext)
         {
-            var keys = Object.keys(context);
+            var keys = Object.keys(routeContext);
                 keys.filter(function(key) {
                     return !Object.keys(this).contains(key);
                 }.bind(this));
 
-            this._context = Object.subset(Object.clone(context), keys);
+            this._routeContext       = Object.subset(Object.clone(routeContext), keys);
+            this._applicationContext = applicationContext;
         },
 
         /**
@@ -112,7 +120,7 @@
             } else {
                 this.wait();
                 setTimeout(function() {
-                    var returned = fn.apply(this._context, [this._content, this._last_content]);
+                    var returned = fn.apply(this._routeContext, [this._content, this._last_content]);
                     if (returned !== false) {
                         this.next(returned);
                     }
@@ -147,27 +155,21 @@
          */
         load: function(resource, options)
         {
-            options = options || {}
+            options = options || {};
             
-            if(typeOf(resource) != 'string') {
-                throw new Error('resource is no string!');
+            var cb   = Function.from(),
+                next = this.next.bind(this);
+            
+            if(options.onSuccess) {
+                cb   = options.onSuccess;
+                options.onSuccess = function() {
+                    cb();
+                    next();
+                }
             }
             
             this.wait();
-
-            var fn       = this.next.bind(this),
-                complete = options.onComplete || Function.from();
-
-            new Request(Object.append(options, {
-                url: resource,
-                async: true,
-                method: 'get',
-                onSuccess: fn,
-                onComplete: function() {
-                    complete.pass(arguments).call();
-                    window.fireEvent('dean-form-rebind');
-                }
-            })).send();
+            this.getContext().getApplication().getViewRenderer().load(resource, options, this);
 
             return this;
         },
@@ -179,6 +181,15 @@
         isWaiting: function()
         {
             return this._wait;
+        },
+
+        /**
+         * 
+         * @return Dean.ApplicationContext
+         */
+        getContext: function()
+        {
+            return this._applicationContext;
         },
 
         /**

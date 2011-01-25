@@ -52,6 +52,10 @@
      */
     d.Application = new Class({
 
+        /**
+         *
+         * @var Array|String
+         */
         Implements: [Events],
 
         /**
@@ -77,6 +81,12 @@
          * @var Object
          */
         _helper: {},
+
+        /**
+         *
+         * @var Dean.ViewRenderer
+         */
+        _viewRenderer: null,
 
         /**
          *
@@ -869,6 +879,19 @@
             });
 
             return multi;
+        },
+        
+        /**
+         * 
+         * @return Dean.ViewRenderer
+         */
+        getViewRenderer: function()
+        {
+            if(null == this._viewRenderer) {
+                this._viewRenderer = new d.ViewRenderer();
+            }
+            
+            return this._viewRenderer;
         }
     });
     

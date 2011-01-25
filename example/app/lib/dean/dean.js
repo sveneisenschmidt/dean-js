@@ -130,6 +130,10 @@
      */
     d.Application = new Class({
 
+        /**
+         *
+         * @var Array|String
+         */
         Implements: [Events],
 
         /**
@@ -155,6 +159,12 @@
          * @var Object
          */
         _helper: {},
+
+        /**
+         *
+         * @var Dean.ViewRenderer
+         */
+        _viewRenderer: null,
 
         /**
          *
@@ -947,6 +957,19 @@
             });
 
             return multi;
+        },
+        
+        /**
+         * 
+         * @return Dean.ViewRenderer
+         */
+        getViewRenderer: function()
+        {
+            if(null == this._viewRenderer) {
+                this._viewRenderer = new d.ViewRenderer();
+            }
+            
+            return this._viewRenderer;
         }
     });
     
@@ -1162,10 +1185,10 @@
                     getElement:     app.getElement.bind(app),
                     getElements:    app.getElements.bind(app),
                     getParams:      function() {return params || {};},
-                    $chain:          new d.ApplicationContextChain(this)
+                    $chain:          new d.ApplicationContextChain()
                 }, app.getHelpers());
 
-            base.$chain.setRouteContext(base);
+            base.$chain.setRouteContext(base, this);
             Object.append(base, {
                 then:  base.$chain.then.bind(base.$chain),
                 next:  base.$chain.next.bind(base.$chain),
@@ -1348,7 +1371,13 @@
          *
          * @var Object
          */
-        _context: null,
+        _routeContext: null,
+
+        /**
+         *
+         * @var Dean.ApplicationContext
+         */
+        _applicationContext: null,
 
         /**
          *
@@ -1364,17 +1393,19 @@
 
         /**
          *
-         * @param Object context
+         * @param Object routeContext
+         * @param Object applicationContext
          * @return void
          */
-        setRouteContext: function(context)
+        setRouteContext: function(routeContext, applicationContext)
         {
-            var keys = Object.keys(context);
+            var keys = Object.keys(routeContext);
                 keys.filter(function(key) {
                     return !Object.keys(this).contains(key);
                 }.bind(this));
 
-            this._context = Object.subset(Object.clone(context), keys);
+            this._routeContext       = Object.subset(Object.clone(routeContext), keys);
+            this._applicationContext = applicationContext;
         },
 
         /**
@@ -1389,7 +1420,7 @@
             } else {
                 this.wait();
                 setTimeout(function() {
-                    var returned = fn.apply(this._context, [this._content, this._last_content]);
+                    var returned = fn.apply(this._routeContext, [this._content, this._last_content]);
                     if (returned !== false) {
                         this.next(returned);
                     }
@@ -1424,27 +1455,21 @@
          */
         load: function(resource, options)
         {
-            options = options || {}
+            options = options || {};
             
-            if(typeOf(resource) != 'string') {
-                throw new Error('resource is no string!');
+            var cb   = Function.from(),
+                next = this.next.bind(this);
+            
+            if(options.onSuccess) {
+                cb   = options.onSuccess;
+                options.onSuccess = function() {
+                    cb();
+                    next();
+                }
             }
             
             this.wait();
-
-            var fn       = this.next.bind(this),
-                complete = options.onComplete || Function.from();
-
-            new Request(Object.append(options, {
-                url: resource,
-                async: true,
-                method: 'get',
-                onSuccess: fn,
-                onComplete: function() {
-                    complete.pass(arguments).call();
-                    window.fireEvent('dean-form-rebind');
-                }
-            })).send();
+            this.getContext().getApplication().getViewRenderer().load(resource, options, this);
 
             return this;
         },
@@ -1456,6 +1481,15 @@
         isWaiting: function()
         {
             return this._wait;
+        },
+
+        /**
+         * 
+         * @return Dean.ApplicationContext
+         */
+        getContext: function()
+        {
+            return this._applicationContext;
         },
 
         /**
@@ -2981,5 +3015,87 @@ Dean.Plugin.Request.JSONP = function() {
             return Mustache.to_html(template, view, partials, fn);
         }); 
     }
+    
+}(Dean));/**
+ *
+ * Copyright (c) 2010, Sven Eisenschmidt.
+ * All rights reserved.
+ *
+ * Redistribution with or without modification, are permitted.
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following
+ * conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * @category View
+ * @package Dean
+ *
+ * @license MIT-Style License
+ * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
+ * @copyright 2010, Sven Eisenschmidt
+ * @link www.unsicherheitsagent.de
+ *
+ */
+
+(function(d) {
+    
+    d.ns('Dean.ViewRenderer');
+
+    /**
+     * Application
+     *
+     * @category Router
+     * @package Dean
+     * @author Sven Eisenschmidt <sven.eisenschmidt@gmail.com>
+     * @copyright 2010, Sven Eisenschmidt
+     * @license MIT-Style License
+     * @link www.unsicherheitsagent.de
+     */
+    d.ViewRenderer= new Class({
+        
+        /**
+         * 
+         * @param String resource
+         * @param Object options
+         * @return void
+         */
+        load: function(resource, options)
+        {
+            options = options || {}
+            
+            if(typeOf(resource) != 'string') {
+                throw new Error('resource is no string!');
+            }
+            
+            var complete = options.onComplete || Function.from();
+
+            new Request(Object.append(options, {
+                url: resource,
+                async: true,
+                method: 'get',
+                onComplete: function() {
+                    complete.pass(arguments).call();
+                    window.fireEvent('dean-form-rebind');
+                }
+            })).send();
+        }
+    });
     
 }(Dean));
